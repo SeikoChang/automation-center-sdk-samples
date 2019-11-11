@@ -358,13 +358,13 @@ def main():
     """
 
     # Anti-Malware example
-    """
+
     print(
         "Displaying results from anti_malware_examples.modify_anti_malware_policy:\n" +
         str(anti_malware_examples.modify_anti_malware_policy(
             api, configuration, api_version, api_exception, policy_id, real_time_scan_config_id, real_time_scan_schedule_id))
     )
-    """
+
 
     # API Key examples
     """
