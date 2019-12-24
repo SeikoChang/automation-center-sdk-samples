@@ -1,0 +1,7 @@
+{
+    "host": "10.43.201.107",
+    "port": "4119",
+    "userName": "masteradmin",
+    "password": "P@ssw0rd",
+    "default_api_version": "v1"
+}
