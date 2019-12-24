@@ -29,7 +29,7 @@ from _utility import deserialize_from_object
 from deepsecurity.rest import RESTResponse, RESTClientObject
 
 
-obj_to_id_map = {
+obj_contained_id_map = {
     'policies': ['integrityMonitoring', 'applicationControl', 'firewall', 'webReputation', 'logInspection', 'antiMalware8'],
     'antiMalware': ['manualScanConfigurationID', 'scheduledScanConfigurationID', 'realTimeScanScheduleID', 'realTimeScanConfigurationID'],
     'antiMalwareConfigurations': ['directoryListID', 'excludedDirectoryListID', 'excludedFileListID', 'excludedProcessImageFileListID', 'excludedFileExtensionListID', 'fileExtensionListID']
@@ -48,7 +48,7 @@ denpendecy_map = {
     'fileExtensionListID':'fileExtensionLists'
 }
 
-map2 = {
+obj_to_id_map = {
     'antiMalwareConfigurations': ['manualScanConfigurationID', 'scheduledScanConfigurationID', 'realTimeScanConfigurationID'],
     'schedules': ['realTimeScanScheduleID'],
     'directoryLists': ['directoryListID', 'excludedDirectoryListID'],
@@ -64,7 +64,7 @@ obj_order = [
     'antiMalwareConfigurations', 
     'policies']
 
-essential = {
+objs_to_list_obj = {
     'schedules': 'list[Schedules]',
     'fileExtensionLists': 'list[FileExtensionLists]',
     'directoryLists': 'list[DirectoryLists]',
@@ -74,7 +74,7 @@ essential = {
     #'computers': 'list[Computers]',
 }
 
-essential3 = {
+objs_to_objs_function = {
     'schedules': 'update_or_create_schedules_to_dsm',
     'fileExtensionLists': 'update_or_create_file_extension_lists_to_dsm',
     'directoryLists': 'update_or_create_directory_lists_to_dsm',
@@ -84,7 +84,7 @@ essential3 = {
     #'computers': 'update_or_create_computer_to_dsm',
 }
 
-essential2 = {
+objs_to_obj_klass = {
     'schedules': 'Schedule',
     'fileExtensionLists': 'FileExtensionList',
     'directoryLists': 'DirectoryList',
@@ -94,7 +94,7 @@ essential2 = {
     #'computers': 'Computer',
 }
 
-essential5 = {
+objs_to_objs_klass = {
     'schedules': 'Schedules',
     'fileExtensionLists': 'FileExtensionLists',
     'directoryLists': 'DirectoryLists',
@@ -104,7 +104,7 @@ essential5 = {
     #'computers': 'Computers',
 }
 
-essential4 = {
+objs_to_obj_method = {
     'schedules': 'schedule',
     'fileExtensionLists': 'file_extension_list',
     'directoryLists': 'directory_list',
@@ -114,7 +114,7 @@ essential4 = {
     #'computers': 'computer',
 }
 
-essential6 = {
+objs_to_objs_method = {
     'schedules': 'schedules',
     'fileExtensionLists': 'file_extension_lists',
     'directoryLists': 'directory_lists',
@@ -124,7 +124,7 @@ essential6 = {
     #'computers': 'computers',
 }
 
-essential7 = {
+objs_to_objs_properties = {
     'schedules': 'schedules',
     'fileExtensionLists': 'file_extension_lists',
     'directoryLists': 'directory_lists',
@@ -1510,7 +1510,6 @@ def update_or_create_policy_to_dsm2(dsapi, computer_property_file=None, delete=F
     return api_response
 
 
-
 def json_update_value_by_key(json, k, v):
     if isinstance(json, dict):
         for key in json.keys():
@@ -1634,7 +1633,7 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
 
     for ds_obj in obj_order: # fix order by using list data structure
         key = ds_obj
-        value = essential2[key]
+        value = objs_to_obj_klass[key]
         if key in computer_properties.keys():
             print('key = [%s] value = [%s]' % (key, value))
             #objs = deserialize_from_object(computer_properties[key], value)
@@ -1646,12 +1645,12 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
                 print('id in properties = [%s]' % obj_id)
                 print('id in properties = [%s]' % obj_name)
                 obj = deserialize_from_object(item, value)
-                api_instance_name = '{klass}Api'.format(klass=essential5[key])
+                api_instance_name = '{klass}Api'.format(klass=objs_to_objs_klass[key])
                 #api_instance = api.SchedulesApi(api.ApiClient(configuration))
                 api_instance = getattr(api, api_instance_name)(api.ApiClient(configuration))
                 for i in range(1, MAX_RETRIES+1):
                     try:
-                        api_name = 'create_{api}'.format(api=essential4[key])
+                        api_name = 'create_{api}'.format(api=objs_to_obj_method[key])
                         api_response = getattr(api_instance, api_name)(obj, api_version=api_version)
                         #api_response = api_instance.create_schedule(schedule=schedule, api_version=api_version)
                     except api_exception as e:
@@ -1665,7 +1664,7 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
                             #print(e)
                             if 'already exists.' in e.body:
                                 print('{}\n{}'.format(e.body, 'Trying to modify it'))
-                                api_name = 'search_{api}'.format(api=essential6[key])
+                                api_name = 'search_{api}'.format(api=objs_to_objs_method[key])
                                 search_criteria = api.SearchCriteria()
                                 search_criteria.field_name = "name"
                                 search_criteria.string_test = "equal"
@@ -1673,8 +1672,8 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
                                 search_filter = api.SearchFilter(None, [search_criteria])
                                 search_filter.max_items = 1
                                 api_response = getattr(api_instance, api_name)(api_version=api_version, search_filter=search_filter)
-                                act_obj_id = getattr(api_response, essential7[key])[0].id
-                                api_name = 'modify_{api}'.format(api=essential4[key])
+                                act_obj_id = getattr(api_response, objs_to_objs_properties[key])[0].id
+                                api_name = 'modify_{api}'.format(api=objs_to_obj_method[key])
                                 api_response = getattr(api_instance, api_name)(act_obj_id, obj, api_version=api_version)
                             else:
                                 print(e)
@@ -1689,8 +1688,8 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
                     print('new id = [%s]' % new_obj_id)
                     computer_properties[key][ind]['id'] = new_obj_id
 
-                    if key in map2.keys():
-                        for item in map2[key]:
+                    if key in obj_to_id_map.keys():
+                        for item in obj_to_id_map[key]:
                             json_update_value_by_new_key_if_needed(computer_properties, item, obj_id, new_obj_id)
 
                     break
