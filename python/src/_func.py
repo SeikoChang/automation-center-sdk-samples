@@ -1615,7 +1615,7 @@ def extrat_element_from_json(obj, path):
 
 
 
-def create_essential_object_and_update_id(dsapi, computer_property_file=None):
+def policies_generation(dsapi, computer_property_file=None):
     api = dsapi.api
     api_exception = dsapi.api_exception
     api_version = dsapi.default_api_version
@@ -1642,8 +1642,8 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
                 #pprint(item)
                 obj_id = item['id']
                 obj_name = item['name']
-                print('id in properties = [%s]' % obj_id)
-                print('id in properties = [%s]' % obj_name)
+                print('id   in properties = [%s]' % obj_id)
+                print('name in properties = [%s]' % obj_name)
                 obj = deserialize_from_object(item, value)
                 api_instance_name = '{klass}Api'.format(klass=objs_to_objs_klass[key])
                 #api_instance = api.SchedulesApi(api.ApiClient(configuration))
@@ -1664,24 +1664,28 @@ def create_essential_object_and_update_id(dsapi, computer_property_file=None):
                             #print(e)
                             if 'already exists.' in e.body:
                                 print('{}\n{}'.format(e.body, 'Trying to modify it'))
-                                api_name = 'search_{api}'.format(api=objs_to_objs_method[key])
-                                search_criteria = api.SearchCriteria()
-                                search_criteria.field_name = "name"
-                                search_criteria.string_test = "equal"
-                                search_criteria.string_value = obj_name
-                                search_filter = api.SearchFilter(None, [search_criteria])
-                                search_filter.max_items = 1
-                                api_response = getattr(api_instance, api_name)(api_version=api_version, search_filter=search_filter)
-                                act_obj_id = getattr(api_response, objs_to_objs_properties[key])[0].id
-                                api_name = 'modify_{api}'.format(api=objs_to_obj_method[key])
-                                api_response = getattr(api_instance, api_name)(act_obj_id, obj, api_version=api_version)
+                                try:
+                                    api_name = 'search_{api}'.format(api=objs_to_objs_method[key])
+                                    search_criteria = api.SearchCriteria()
+                                    search_criteria.field_name = "name"
+                                    search_criteria.string_test = "equal"
+                                    search_criteria.string_value = obj_name
+                                    search_filter = api.SearchFilter(None, [search_criteria])
+                                    search_filter.max_items = 1
+                                    api_response = getattr(api_instance, api_name)(api_version=api_version, search_filter=search_filter)
+                                    act_obj_id = getattr(api_response, objs_to_objs_properties[key])[0].id
+                                    api_name = 'modify_{api}'.format(api=objs_to_obj_method[key])
+                                    api_response = getattr(api_instance, api_name)(act_obj_id, obj, api_version=api_version)
+                                except:
+                                    print(e)
+
                             else:
                                 print(e)
-                                print('Generic Exception: ' + traceback.format_exc())
+                                # TODO
                                 return False
                         else:
                             print(e)
-                            print('Generic Exception: ' + traceback.format_exc())
+                            # TODO
                             return False
 
                     new_obj_id = api_response.to_dict()['id']

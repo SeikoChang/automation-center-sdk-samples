@@ -12,7 +12,7 @@ import _func
 
 
 def main(dsapi=DSApiClient()):
-    _func.create_essential_object_and_update_id(dsapi, 'computer_properties.json')
+    _func.policies_generation(dsapi, 'computer_properties.json')
 
 if __name__ == '__main__':
     main()
