@@ -24,7 +24,7 @@ urllib3.disable_warnings(InsecurePlatformWarning)
 
 
 class DSApiClient(api.ApiClient):
-    def __init__(self, configuration=None):
+    def __init__(self, configuration=None, dsm_property='dsm_properties.json', computer_property='computer_properties.json'):
         self.api = api
         self.api_exception = api_exception
 
@@ -32,8 +32,15 @@ class DSApiClient(api.ApiClient):
 
         super(DSApiClient, self).__init__(configuration=self.configuration)
 
-        dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
-        computer_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), computer_property)
+        #dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
+        dsm_property_file = dsm_property
+        if not os.path.exists(dsm_property_file):
+            raise Exception('exception due to dsm propery file = %s not found' % dsm_property_file)
+
+        #computer_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), computer_property)
+        computer_property_file = computer_property
+        if not os.path.exists(computer_property_file):
+            raise Exception('exception due to configuration propery file = %s not found' % computer_property_file)
 
         self.dsm_properties = self.load_property(dsm_property_file)
         self.computer_properties = self.load_property(computer_property_file)
@@ -77,8 +84,8 @@ class DSApiClient(api.ApiClient):
 
         #print("header: %s, payload: %s" % (header, payload))
         result = requests.post(url + "/apikeys",
-                                headers=header, 
-                                data=json.dumps(payload), 
+                                headers=header,
+                                data=json.dumps(payload),
                                 verify=False)
         #print("status_code: %s" % result.status_code)
         #print("content: %s" % result.text)
