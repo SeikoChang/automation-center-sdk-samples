@@ -62,7 +62,7 @@ def setattr_from_attribute_map(object, attribute_map):
         except:
             # bybass those attribute not set to allowed_values
             print('unable to set attr = [%s] by [%s]' % (k, v))
-    
+
 def serializ(obj):
     result = {}
     attribute_map = obj.attribute_map
@@ -83,7 +83,7 @@ def serializ(obj):
                 #print('is obj')
                 result[new_attr] = get_attr_from_config(value)
             elif isinstance(value, dict):
-                #print('is dict') 
+                #print('is dict')
                 result[new_attr] = dict(map(
                     lambda item: (item[0], get_attr_from_config(item[1]))
                     if hasattr(item[1], "to_dict") else item,
@@ -93,6 +93,60 @@ def serializ(obj):
                 result[new_attr] = value
 
     return result
+
+def sanitize_for_serialization(obj):
+    """Builds a JSON POST object.
+
+    If obj is None, return None.
+    If obj is str, int, long, float, bool, return directly.
+    If obj is datetime.datetime, datetime.date
+        convert to string in iso8601 format.
+    If obj is list, sanitize each element in the list.
+    If obj is dict, return the dict.
+    If obj is swagger model, return the properties dict.
+
+    :param obj: The data to serialize.
+    :return: The serialized form of data.
+    """
+    PRIMITIVE_TYPES = (float, bool, bytes, six.text_type) + six.integer_types
+    NATIVE_TYPES_MAPPING = {
+        'int': int,
+        'long': int if six.PY3 else long,  # noqa: F821
+        'float': float,
+        'str': str,
+        'bool': bool,
+        'date': datetime.date,
+        'datetime': datetime.datetime,
+        'object': object,
+    }
+
+    if obj is None:
+        return None
+    elif isinstance(obj, PRIMITIVE_TYPES):
+        return obj
+    elif isinstance(obj, list):
+        return [sanitize_for_serialization(sub_obj)
+                for sub_obj in obj]
+    elif isinstance(obj, tuple):
+        return tuple(sanitize_for_serialization(sub_obj)
+                        for sub_obj in obj)
+    elif isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+
+    if isinstance(obj, dict):
+        obj_dict = obj
+    else:
+        # Convert model obj to dict except
+        # attributes `swagger_types`, `attribute_map`
+        # and attributes which value is not None.
+        # Convert attribute name to json key in
+        # model definition for request.
+        obj_dict = {obj.attribute_map[attr]: getattr(obj, attr)
+                    for attr, _ in six.iteritems(obj.swagger_types)
+                    if getattr(obj, attr) is not None}
+
+    return {key: sanitize_for_serialization(val)
+            for key, val in six.iteritems(obj_dict)}
 
 def deserialize2(obj):
     result = {}
@@ -148,55 +202,55 @@ def deserialize_from_response(data, klass):
     return deserialize_from_object(data, klass)
 
 def deserialize_from_object(data, klass):
-        """Deserializes dict, list, str into an object.
+    """Deserializes dict, list, str into an object.
 
-        :param data: dict, list or str.
-        :param klass: class literal, or string of class name.
+    :param data: dict, list or str.
+    :param klass: class literal, or string of class name.
 
-        :return: object.
-        """
-        PRIMITIVE_TYPES = (float, bool, bytes, six.text_type) + six.integer_types
-        NATIVE_TYPES_MAPPING = {
-            'int': int,
-            'long': int if six.PY3 else long,  # noqa: F821
-            'float': float,
-            'str': str,
-            'bool': bool,
-            'date': datetime.date,
-            'datetime': datetime.datetime,
-            'object': object,
-        }
+    :return: object.
+    """
+    PRIMITIVE_TYPES = (float, bool, bytes, six.text_type) + six.integer_types
+    NATIVE_TYPES_MAPPING = {
+        'int': int,
+        'long': int if six.PY3 else long,  # noqa: F821
+        'float': float,
+        'str': str,
+        'bool': bool,
+        'date': datetime.date,
+        'datetime': datetime.datetime,
+        'object': object,
+    }
 
-        if data is None:
-            return None
+    if data is None:
+        return None
 
-        if type(klass) == str:
-            if klass.startswith('list['):
-                sub_kls = re.match('list\[(.*)\]', klass).group(1)
-                return [deserialize_from_object(sub_data, sub_kls)
-                        for sub_data in data]
+    if type(klass) == str:
+        if klass.startswith('list['):
+            sub_kls = re.match('list\[(.*)\]', klass).group(1)
+            return [deserialize_from_object(sub_data, sub_kls)
+                    for sub_data in data]
 
-            if klass.startswith('dict('):
-                sub_kls = re.match('dict\(([^,]*), (.*)\)', klass).group(2)
-                return {k: deserialize_from_object(v, sub_kls)
-                        for k, v in six.iteritems(data)}
+        if klass.startswith('dict('):
+            sub_kls = re.match('dict\(([^,]*), (.*)\)', klass).group(2)
+            return {k: deserialize_from_object(v, sub_kls)
+                    for k, v in six.iteritems(data)}
 
-            # convert str to class
-            if klass in NATIVE_TYPES_MAPPING:
-                klass = NATIVE_TYPES_MAPPING[klass]
-            else:
-                klass = getattr(deepsecurity.models, klass)
-
-        if klass in PRIMITIVE_TYPES:
-            return deserialize_primitive_(data, klass)
-        elif klass == object:
-            return deserialize_object_(data)
-        elif klass == datetime.date:
-            return deserialize_date_(data)
-        elif klass == datetime.datetime:
-            return deserialize_datatime_(data)
+        # convert str to class
+        if klass in NATIVE_TYPES_MAPPING:
+            klass = NATIVE_TYPES_MAPPING[klass]
         else:
-            return deserialize_model_(data, klass)
+            klass = getattr(deepsecurity.models, klass)
+
+    if klass in PRIMITIVE_TYPES:
+        return deserialize_primitive_(data, klass)
+    elif klass == object:
+        return deserialize_object_(data)
+    elif klass == datetime.date:
+        return deserialize_date_(data)
+    elif klass == datetime.datetime:
+        return deserialize_datatime_(data)
+    else:
+        return deserialize_model_(data, klass)
 
 def deserialize_file_(response):
     """Deserializes body to file
