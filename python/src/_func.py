@@ -26,6 +26,7 @@ from _utility import merge_dicts
 #from _utility import setattr_from_attribute_map
 from _utility import serializ
 from _utility import deserialize_from_object
+from _utility import sanitize_for_serialization
 from _utility import json_update_key_name
 from _utility import json_update_value_by_new_key_if_needed
 
@@ -65,7 +66,9 @@ obj_order = [
     'directoryLists', 
     'fileLists', 
     'antiMalwareConfigurations', 
-    'policies']
+    'policies',
+    #'computers',
+    ]
 
 objs_to_list_obj = {
     'schedules': 'list[Schedules]',
@@ -74,7 +77,7 @@ objs_to_list_obj = {
     'fileLists': 'list[FileList]',
     'antiMalwareConfigurations': 'list[AntiMalwareConfigurations]',
     'policies': 'list[Policies]',
-    #'computers': 'list[Computers]',
+    'computers': 'list[Computers]',
 }
 
 objs_to_objs_function = {
@@ -84,7 +87,7 @@ objs_to_objs_function = {
     'fileLists': 'update_or_create_file_lists_to_dsm',
     'antiMalwareConfigurations': 'update_or_create_anti_malware_to_dsm',
     'policies': 'update_or_create_policy_to_dsm',
-    #'computers': 'update_or_create_computer_to_dsm',
+    'computers': 'update_or_create_computer_to_dsm',
 }
 
 objs_to_obj_klass = {
@@ -94,7 +97,7 @@ objs_to_obj_klass = {
     'fileLists': 'FileList',
     'antiMalwareConfigurations': 'AntiMalwareConfiguration',
     'policies': 'Policy',
-    #'computers': 'Computer',
+    'computers': 'Computer',
 }
 
 objs_to_objs_klass = {
@@ -104,7 +107,7 @@ objs_to_objs_klass = {
     'fileLists': 'FileLists',
     'antiMalwareConfigurations': 'AntiMalwareConfigurations',
     'policies': 'Policies',
-    #'computers': 'Computers',
+    'computers': 'Computers',
 }
 
 objs_to_obj_method = {
@@ -114,7 +117,7 @@ objs_to_obj_method = {
     'fileLists': 'file_list',
     'antiMalwareConfigurations': 'anti_malware',
     'policies': 'policy',
-    #'computers': 'computer',
+    'computers': 'computer',
 }
 
 objs_to_objs_method = {
@@ -124,7 +127,7 @@ objs_to_objs_method = {
     'fileLists': 'file_lists',
     'antiMalwareConfigurations': 'anti_malwares',
     'policies': 'policies',
-    #'computers': 'computers',
+    'computers': 'computers',
 }
 
 objs_to_objs_properties = {
@@ -134,7 +137,17 @@ objs_to_objs_properties = {
     'fileLists': 'file_lists',
     'antiMalwareConfigurations': 'anti_malware_configurations',
     'policies': 'policies',
-    #'computers': 'computers',
+    'computers': 'computers',
+}
+
+objs_to_obj_identity = {
+    'schedules': 'name',
+    'fileExtensionLists': 'name',
+    'directoryLists': 'name',
+    'fileLists': 'name',
+    'antiMalwareConfigurations': 'name',
+    'policies': 'name',
+    'computers': 'hostName',
 }
 
 
@@ -1515,7 +1528,7 @@ def update_or_create_policy_to_dsm2(dsapi, computer_property_file=None, delete=F
 
 
 
-def policies_generation(dsapi, computer_property_file=None):
+def policies_operation(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
     api_exception = dsapi.api_exception
     api_version = dsapi.default_api_version
@@ -1535,15 +1548,15 @@ def policies_generation(dsapi, computer_property_file=None):
         key = ds_obj
         value = objs_to_obj_klass[key]
         if key in computer_properties.keys():
-            print('key = [%s] value = [%s]' % (key, value))
+            print('key =  [%s] value = [%s]' % (key, value))
             #objs = deserialize_from_object(computer_properties[key], value)
             for ind, item in enumerate(computer_properties[key]):
                 #print(type(item))
                 #pprint(item)
                 obj_id = item['id']
-                obj_name = item['name']
-                print('id   in properties = [%s]' % obj_id)
-                print('name in properties = [%s]' % obj_name)
+                obj_identity = item[objs_to_obj_identity[key]]
+                print('id =       [%s] in properties' % obj_id)
+                print('identity = [%s] in properties' % obj_identity)
                 obj = deserialize_from_object(item, value)
                 api_instance_name = '{klass}Api'.format(klass=objs_to_objs_klass[key])
                 #api_instance = api.SchedulesApi(api.ApiClient(configuration))
@@ -1569,7 +1582,7 @@ def policies_generation(dsapi, computer_property_file=None):
                                     search_criteria = api.SearchCriteria()
                                     search_criteria.field_name = "name"
                                     search_criteria.string_test = "equal"
-                                    search_criteria.string_value = obj_name
+                                    search_criteria.string_value = obj_identity
                                     search_filter = api.SearchFilter(None, [search_criteria])
                                     search_filter.max_items = 1
                                     api_response = getattr(api_instance, api_name)(api_version=api_version, search_filter=search_filter)
@@ -1581,24 +1594,87 @@ def policies_generation(dsapi, computer_property_file=None):
 
                             else:
                                 print(e)
-                                # TODO
+                                # TODO handle more different situation when status code = 400
                                 return False
                         else:
+                            print('An exception occurred when calling [{api}]'.format(api=api_name))
                             print(e)
-                            # TODO
+                            # TODO handle more different status code
                             return False
 
-                    new_obj_id = api_response.to_dict()['id']
-                    print('new id = [%s]' % new_obj_id)
-                    computer_properties[key][ind]['id'] = new_obj_id
+                    if api_response:
+                        new_obj_id = api_response.to_dict()['id']
+                        print('new id = [%s]' % new_obj_id)
+                        computer_properties[key][ind]['id'] = new_obj_id
 
-                    if key in obj_to_id_map.keys():
-                        for item in obj_to_id_map[key]:
-                            json_update_value_by_new_key_if_needed(computer_properties, item, obj_id, new_obj_id)
+                        if key in obj_to_id_map.keys():
+                            for item in obj_to_id_map[key]:
+                                json_update_value_by_new_key_if_needed(computer_properties, item, obj_id, new_obj_id)
 
-                    break
+                        break
 
     # update 'id' back to computer_properties
     if computer_property_file and os.path.exists(computer_property_file):
         with open(computer_property_file, "w") as raw_properties:
             json.dump(computer_properties, raw_properties, indent=4, separators=(',', ':'), default=json_serial)
+
+def policies_dump(dsapi, computer_property_file=None, update=False):
+    api = dsapi.api
+    api_exception = dsapi.api_exception
+    api_version = dsapi.default_api_version
+    configuration = dsapi.configuration
+
+    MAX_RETRIES = 12
+
+    computer_properties = None
+    if computer_property_file and os.path.exists(computer_property_file):
+        with open(computer_property_file) as raw_properties:
+            computer_properties = json.load(raw_properties)
+    computer_properties = computer_properties or dsapi.computer_properties
+
+    computer_properties = json_update_key_name(computer_properties, 'ID', 'id')
+
+    for ds_obj in obj_order: # fix order by using list data structure
+        key = ds_obj
+        value = objs_to_obj_klass[ds_obj]
+
+        api_response = None
+        api_instance_name = '{klass}Api'.format(klass=objs_to_objs_klass[ds_obj])
+        api_instance = getattr(api, api_instance_name)(api.ApiClient(configuration))
+        #api_instance = api.ComputersApi(api.ApiClient(configuration))
+        for i in range(1, MAX_RETRIES+1):
+            try:
+                api_name = 'list_{api}'.format(api=objs_to_objs_method[ds_obj])
+                api_response = getattr(api_instance, api_name)(api_version=api_version)
+                #api_response = api_instance.list_computers(api_version=api_version)
+            except api_exception as e:
+                if e.status == 429:
+                    # Calculate sleep time
+                    exp_backoff = (2 ** (i + 3)) / 1000
+                    print('API rate limit is exceeded. Retry in {} s.'.format(exp_backoff))
+                    time.sleep(exp_backoff)
+                else:
+                    print('An exception occurred when calling [{api}]'.format(api=api_name))
+                    print(e)
+                    # TODO handle more different status code
+                    return False
+
+            # write back to computer_properties
+            if computer_property_file and os.path.exists(computer_property_file):
+                if not update: # update those items in dsm but not in property file
+                    result = sanitize_for_serialization(api_response)
+                    #pprint(result)
+                    computer_properties[ds_obj] = result[ds_obj] # to fullfill payload format
+                else: # [keep property file] and update those items in dsm but not in property file
+                    all_name_in_dsm = set([x[objs_to_obj_identity[ds_obj]].decode('utf-8') for x in api_response.to_dict()[ds_obj]])
+                    all_name_in_config = set([x[objs_to_obj_identity[ds_obj]] for x in computer_properties[ds_obj]])
+                    update_set = (all_name_in_dsm - all_name_in_config)
+                    for dsm in api_response.to_dict()[ds_obj]:
+                        if dsm[objs_to_obj_identity[ds_obj]] in update_set:
+                            #new_dsm = {name_map[name]: val for name, val in dsm.items()}
+                            new_dsm = serializ(api_response.computers(host_name=dsm[objs_to_obj_identity[ds_obj]]))
+                            computer_properties[ds_obj].append(new_dsm) # to fullfill payload format
+                with open(computer_property_file, "w") as raw_properties:
+                    json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+
+            break
