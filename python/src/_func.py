@@ -61,11 +61,11 @@ obj_to_id_map = {
 }
 
 obj_order = [
-    'schedules', 
-    'fileExtensionLists', 
-    'directoryLists', 
-    'fileLists', 
-    'antiMalwareConfigurations', 
+    'schedules',
+    'fileExtensionLists',
+    'directoryLists',
+    'fileLists',
+    'antiMalwareConfigurations',
     'policies',
     #'computers',
     ]
