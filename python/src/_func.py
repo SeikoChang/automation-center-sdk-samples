@@ -80,6 +80,9 @@ objs_order = [
     'ipLists',
     'macLists',
     'portLists',
+    'contexts',
+    'statefulConfigurations',
+    'firewallRules',
     'policies',
     'computers',
     ]
@@ -94,6 +97,9 @@ objs_to_objs_properties = {
     'ipLists': 'ip_lists',
     'macLists': 'mac_lists',
     'portLists': 'port_lists',
+    'contexts': 'contexts',
+    'statefulConfigurations': 'stateful_configurations',
+    'firewallRules': 'firewall_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
@@ -108,6 +114,9 @@ objs_to_objs_klass = {
     'ipLists': 'IPLists',
     'macLists': 'MacLists',
     'portLists': 'PortLists',
+    'contexts': 'Contexts',
+    'statefulConfigurations': 'StatefulConfigurations',
+    'firewallRules': 'FirewallRules',
     'policies': 'Policies',
     'computers': 'Computers',
 }
@@ -122,6 +131,9 @@ objs_to_objs_list = {
     'ipLists': 'list[IpLists]',
     'macLists': 'list[MacLists]',
     'portLists': 'list[PortLists]',
+    'contexts': 'list[Contexts]',
+    'statefulConfigurations': 'list[StatefulConfigurations]',
+    'firewallRules': 'list[FirewallRules]',
     'policies': 'list[Policies]',
     'computers': 'list[Computers]',
 }
@@ -136,10 +148,12 @@ objs_to_obj_klass = {
     'ipLists': 'IpList',
     'macLists': 'MacList',
     'portLists': 'PortList',
+    'contexts': 'Context',
+    'statefulConfigurations': 'StatefulConfiguration',
+    'firewallRules': 'FirewallRule',
     'policies': 'Policy',
     'computers': 'Computer',
 }
-
 
 objs_to_obj_identity = {
     'schedules': 'name',
@@ -151,6 +165,9 @@ objs_to_obj_identity = {
     'ipLists': 'name',
     'macLists': 'name',
     'portLists': 'name',
+    'contexts': 'name',
+    'statefulConfigurations': 'name',
+    'firewallRules': 'name',
     'policies': 'name',
     'computers': 'hostName',
 }
@@ -165,6 +182,9 @@ objs_to_obj_method = {
     'ipLists': 'ip_list',
     'macLists': 'mac_list',
     'portLists': 'port_list',
+    'contexts': 'context',
+    'statefulConfigurations': 'stateful_configuration',
+    'firewallRules': 'firewall_rule',
     'policies': 'policy',
     'computers': 'computer',
 }
@@ -179,6 +199,9 @@ objs_to_objs_method = {
     'ipLists': 'ip_lists',
     'macLists': 'mac_lists',
     'portLists': 'port_lists',
+    'contexts': 'contexts',
+    'statefulConfigurations': 'stateful_configurations',
+    'firewallRules': 'firewall_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
