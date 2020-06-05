@@ -60,26 +60,6 @@ obj_to_id_map = {
     'fileExtensionLists' : ['excludedFileExtensionListID', 'fileExtensionListID']
 }
 
-obj_order = [
-    'schedules',
-    'fileExtensionLists',
-    'directoryLists',
-    'fileLists',
-    'antiMalwareConfigurations',
-    'policies',
-    #'computers',
-    ]
-
-objs_to_list_obj = {
-    'schedules': 'list[Schedules]',
-    'fileExtensionLists': 'list[FileExtensionLists]',
-    'directoryLists': 'list[DirectoryLists]',
-    'fileLists': 'list[FileList]',
-    'antiMalwareConfigurations': 'list[AntiMalwareConfigurations]',
-    'policies': 'list[Policies]',
-    'computers': 'list[Computers]',
-}
-
 objs_to_objs_function = {
     'schedules': 'update_or_create_schedules_to_dsm',
     'fileExtensionLists': 'update_or_create_file_extension_lists_to_dsm',
@@ -90,12 +70,28 @@ objs_to_objs_function = {
     'computers': 'update_or_create_computer_to_dsm',
 }
 
+objs_order = [
+    'schedules',
+    'fileExtensionLists',
+    'directoryLists',
+    'fileLists',
+    'antiMalwareConfigurations',
+    'interfaceTypes',
+    'ipLists',
+    'macLists',
+    'policies',
+    'computers',
+    ]
+
 objs_to_obj_klass = {
     'schedules': 'Schedule',
     'fileExtensionLists': 'FileExtensionList',
     'directoryLists': 'DirectoryList',
     'fileLists': 'FileList',
     'antiMalwareConfigurations': 'AntiMalwareConfiguration',
+    'interfaceTypes': 'InterfaceType',
+    'ipLists': 'IpList',
+    'macLists': 'MacList',
     'policies': 'Policy',
     'computers': 'Computer',
 }
@@ -106,8 +102,24 @@ objs_to_objs_klass = {
     'directoryLists': 'DirectoryLists',
     'fileLists': 'FileLists',
     'antiMalwareConfigurations': 'AntiMalwareConfigurations',
+    'interfaceTypes': 'InterfaceTypes',
+    'ipLists': 'IPLists',
+    'macLists': 'MacLists',
     'policies': 'Policies',
     'computers': 'Computers',
+}
+
+objs_to_objs_list = {
+    'schedules': 'list[Schedules]',
+    'fileExtensionLists': 'list[FileExtensionLists]',
+    'directoryLists': 'list[DirectoryLists]',
+    'fileLists': 'list[FileList]',
+    'antiMalwareConfigurations': 'list[AntiMalwareConfigurations]',
+    'interfaceTypes': 'list[InterfaceTypes]',
+    'ipLists': 'list[IpLists]',
+    'macLists': 'list[MacLists]',
+    'policies': 'list[Policies]',
+    'computers': 'list[Computers]',
 }
 
 objs_to_obj_method = {
@@ -116,6 +128,9 @@ objs_to_obj_method = {
     'directoryLists': 'directory_list',
     'fileLists': 'file_list',
     'antiMalwareConfigurations': 'anti_malware',
+    'interfaceTypes': 'interface_type',
+    'ipLists': 'ip_list',
+    'macLists': 'mac_list',
     'policies': 'policy',
     'computers': 'computer',
 }
@@ -126,6 +141,9 @@ objs_to_objs_method = {
     'directoryLists': 'directory_lists',
     'fileLists': 'file_lists',
     'antiMalwareConfigurations': 'anti_malwares',
+    'interfaceTypes': 'interface_types',
+    'ipLists': 'ip_lists',
+    'macLists': 'mac_lists',
     'policies': 'policies',
     'computers': 'computers',
 }
@@ -136,6 +154,9 @@ objs_to_objs_properties = {
     'directoryLists': 'directory_lists',
     'fileLists': 'file_lists',
     'antiMalwareConfigurations': 'anti_malware_configurations',
+    'interfaceTypes': 'interface_types',
+    'ipLists': 'ip_lists',
+    'macLists': 'mac_lists',
     'policies': 'policies',
     'computers': 'computers',
 }
@@ -146,6 +167,9 @@ objs_to_obj_identity = {
     'directoryLists': 'name',
     'fileLists': 'name',
     'antiMalwareConfigurations': 'name',
+    'interfaceTypes': 'name',
+    'ipLists': 'name',
+    'macLists': 'name',
     'policies': 'name',
     'computers': 'hostName',
 }
@@ -1544,7 +1568,7 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
 
     computer_properties = json_update_key_name(computer_properties, 'ID', 'id')
 
-    for ds_obj in obj_order: # fix order by using list data structure
+    for ds_obj in objs_order: # fix order by using list data structure
         key = ds_obj
         value = objs_to_obj_klass[key]
         if key in computer_properties.keys():
@@ -1634,7 +1658,7 @@ def policies_dump(dsapi, computer_property_file=None, update=False):
 
     computer_properties = json_update_key_name(computer_properties, 'ID', 'id')
 
-    for ds_obj in obj_order: # fix order by using list data structure
+    for ds_obj in objs_order: # fix order by using list data structure
         key = ds_obj
         value = objs_to_obj_klass[ds_obj]
 
