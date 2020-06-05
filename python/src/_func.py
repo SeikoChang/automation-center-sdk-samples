@@ -79,21 +79,23 @@ objs_order = [
     'interfaceTypes',
     'ipLists',
     'macLists',
+    'portLists',
     'policies',
     'computers',
     ]
 
-objs_to_obj_klass = {
-    'schedules': 'Schedule',
-    'fileExtensionLists': 'FileExtensionList',
-    'directoryLists': 'DirectoryList',
-    'fileLists': 'FileList',
-    'antiMalwareConfigurations': 'AntiMalwareConfiguration',
-    'interfaceTypes': 'InterfaceType',
-    'ipLists': 'IpList',
-    'macLists': 'MacList',
-    'policies': 'Policy',
-    'computers': 'Computer',
+objs_to_objs_properties = {
+    'schedules': 'schedules',
+    'fileExtensionLists': 'file_extension_lists',
+    'directoryLists': 'directory_lists',
+    'fileLists': 'file_lists',
+    'antiMalwareConfigurations': 'anti_malware_configurations',
+    'interfaceTypes': 'interface_types',
+    'ipLists': 'ip_lists',
+    'macLists': 'mac_lists',
+    'portLists': 'port_lists',
+    'policies': 'policies',
+    'computers': 'computers',
 }
 
 objs_to_objs_klass = {
@@ -105,6 +107,7 @@ objs_to_objs_klass = {
     'interfaceTypes': 'InterfaceTypes',
     'ipLists': 'IPLists',
     'macLists': 'MacLists',
+    'portLists': 'PortLists',
     'policies': 'Policies',
     'computers': 'Computers',
 }
@@ -118,8 +121,38 @@ objs_to_objs_list = {
     'interfaceTypes': 'list[InterfaceTypes]',
     'ipLists': 'list[IpLists]',
     'macLists': 'list[MacLists]',
+    'portLists': 'list[PortLists]',
     'policies': 'list[Policies]',
     'computers': 'list[Computers]',
+}
+
+objs_to_obj_klass = {
+    'schedules': 'Schedule',
+    'fileExtensionLists': 'FileExtensionList',
+    'directoryLists': 'DirectoryList',
+    'fileLists': 'FileList',
+    'antiMalwareConfigurations': 'AntiMalwareConfiguration',
+    'interfaceTypes': 'InterfaceType',
+    'ipLists': 'IpList',
+    'macLists': 'MacList',
+    'portLists': 'PortList',
+    'policies': 'Policy',
+    'computers': 'Computer',
+}
+
+
+objs_to_obj_identity = {
+    'schedules': 'name',
+    'fileExtensionLists': 'name',
+    'directoryLists': 'name',
+    'fileLists': 'name',
+    'antiMalwareConfigurations': 'name',
+    'interfaceTypes': 'name',
+    'ipLists': 'name',
+    'macLists': 'name',
+    'portLists': 'name',
+    'policies': 'name',
+    'computers': 'hostName',
 }
 
 objs_to_obj_method = {
@@ -131,6 +164,7 @@ objs_to_obj_method = {
     'interfaceTypes': 'interface_type',
     'ipLists': 'ip_list',
     'macLists': 'mac_list',
+    'portLists': 'port_list',
     'policies': 'policy',
     'computers': 'computer',
 }
@@ -144,34 +178,9 @@ objs_to_objs_method = {
     'interfaceTypes': 'interface_types',
     'ipLists': 'ip_lists',
     'macLists': 'mac_lists',
+    'portLists': 'port_lists',
     'policies': 'policies',
     'computers': 'computers',
-}
-
-objs_to_objs_properties = {
-    'schedules': 'schedules',
-    'fileExtensionLists': 'file_extension_lists',
-    'directoryLists': 'directory_lists',
-    'fileLists': 'file_lists',
-    'antiMalwareConfigurations': 'anti_malware_configurations',
-    'interfaceTypes': 'interface_types',
-    'ipLists': 'ip_lists',
-    'macLists': 'mac_lists',
-    'policies': 'policies',
-    'computers': 'computers',
-}
-
-objs_to_obj_identity = {
-    'schedules': 'name',
-    'fileExtensionLists': 'name',
-    'directoryLists': 'name',
-    'fileLists': 'name',
-    'antiMalwareConfigurations': 'name',
-    'interfaceTypes': 'name',
-    'ipLists': 'name',
-    'macLists': 'name',
-    'policies': 'name',
-    'computers': 'hostName',
 }
 
 
