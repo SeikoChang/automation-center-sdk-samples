@@ -84,6 +84,7 @@ objs_order = [
     'statefulConfigurations',
     'firewallRules',
     'logInspectionRules',
+    'integrityMonitoringRules',
     'policies',
     'computers',
     ]
@@ -102,6 +103,7 @@ objs_to_objs_properties = {
     'statefulConfigurations': 'stateful_configurations',
     'firewallRules': 'firewall_rules',
     'logInspectionRules': 'log_inspection_rules',
+    'integrityMonitoringRules': 'integrity_monitoring_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
@@ -120,6 +122,7 @@ objs_to_objs_klass = {
     'statefulConfigurations': 'StatefulConfigurations',
     'firewallRules': 'FirewallRules',
     'logInspectionRules': 'LogInspectionRules',
+    'integrityMonitoringRules': 'IntegrityMonitoringRules',
     'policies': 'Policies',
     'computers': 'Computers',
 }
@@ -138,6 +141,7 @@ objs_to_objs_list = {
     'statefulConfigurations': 'list[StatefulConfigurations]',
     'firewallRules': 'list[FirewallRules]',
     'logInspectionRules': 'list[LogInspectionRules]',
+    'integrityMonitoringRules': 'list[IntegrityMonitoringRules]',
     'policies': 'list[Policies]',
     'computers': 'list[Computers]',
 }
@@ -156,6 +160,7 @@ objs_to_obj_klass = {
     'statefulConfigurations': 'StatefulConfiguration',
     'firewallRules': 'FirewallRule',
     'logInspectionRules': 'LogInspectionRule',
+    'integrityMonitoringRules': 'IntegrityMonitoringRule',
     'policies': 'Policy',
     'computers': 'Computer',
 }
@@ -174,6 +179,7 @@ objs_to_obj_identity = {
     'statefulConfigurations': 'name',
     'firewallRules': 'name',
     'logInspectionRules': 'name',
+    'integrityMonitoringRules': 'name',
     'policies': 'name',
     'computers': 'hostName',
 }
@@ -192,6 +198,7 @@ objs_to_obj_method = {
     'statefulConfigurations': 'stateful_configuration',
     'firewallRules': 'firewall_rule',
     'logInspectionRules': 'log_inspection_rule',
+    'integrityMonitoringRules': 'integrity_monitoring_rule',
     'policies': 'policy',
     'computers': 'computer',
 }
@@ -210,6 +217,7 @@ objs_to_objs_method = {
     'statefulConfigurations': 'stateful_configurations',
     'firewallRules': 'firewall_rules',
     'logInspectionRules': 'log_inspection_rules',
+    'integrityMonitoringRules': 'integrity_monitoring_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
