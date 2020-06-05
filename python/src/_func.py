@@ -85,6 +85,8 @@ objs_order = [
     'firewallRules',
     'logInspectionRules',
     'integrityMonitoringRules',
+    'applicationTypes',
+    'intrusionPreventionRules',
     'policies',
     'computers',
     ]
@@ -104,6 +106,8 @@ objs_to_objs_properties = {
     'firewallRules': 'firewall_rules',
     'logInspectionRules': 'log_inspection_rules',
     'integrityMonitoringRules': 'integrity_monitoring_rules',
+    'applicationTypes': 'application_types',
+    'intrusionPreventionRules': 'intrusion_prevention_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
@@ -123,6 +127,8 @@ objs_to_objs_klass = {
     'firewallRules': 'FirewallRules',
     'logInspectionRules': 'LogInspectionRules',
     'integrityMonitoringRules': 'IntegrityMonitoringRules',
+    'applicationTypes': 'ApplicationTypes',
+    'intrusionPreventionRules': 'IntrusionPreventionRules',
     'policies': 'Policies',
     'computers': 'Computers',
 }
@@ -142,6 +148,8 @@ objs_to_objs_list = {
     'firewallRules': 'list[FirewallRules]',
     'logInspectionRules': 'list[LogInspectionRules]',
     'integrityMonitoringRules': 'list[IntegrityMonitoringRules]',
+    'applicationTypes': 'list[ApplicationTypes]',
+    'intrusionPreventionRules': 'list[IntrusionPreventionRules]',
     'policies': 'list[Policies]',
     'computers': 'list[Computers]',
 }
@@ -161,6 +169,8 @@ objs_to_obj_klass = {
     'firewallRules': 'FirewallRule',
     'logInspectionRules': 'LogInspectionRule',
     'integrityMonitoringRules': 'IntegrityMonitoringRule',
+    'applicationTypes': 'ApplicationType',
+    'intrusionPreventionRules': 'IntrusionPreventionRule',
     'policies': 'Policy',
     'computers': 'Computer',
 }
@@ -180,6 +190,8 @@ objs_to_obj_identity = {
     'firewallRules': 'name',
     'logInspectionRules': 'name',
     'integrityMonitoringRules': 'name',
+    'applicationTypes': 'name',
+    'intrusionPreventionRules': 'name',
     'policies': 'name',
     'computers': 'hostName',
 }
@@ -199,6 +211,8 @@ objs_to_obj_method = {
     'firewallRules': 'firewall_rule',
     'logInspectionRules': 'log_inspection_rule',
     'integrityMonitoringRules': 'integrity_monitoring_rule',
+    'applicationTypes': 'application_type',
+    'intrusionPreventionRules': 'intrusion_prevention_rule',
     'policies': 'policy',
     'computers': 'computer',
 }
@@ -218,6 +232,8 @@ objs_to_objs_method = {
     'firewallRules': 'firewall_rules',
     'logInspectionRules': 'log_inspection_rules',
     'integrityMonitoringRules': 'integrity_monitoring_rules',
+    'applicationTypes': 'application_types',
+    'intrusionPreventionRules': 'intrusion_prevention_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
