@@ -52,14 +52,6 @@ denpendecy_map = {
     'fileExtensionListID':'fileExtensionLists'
 }
 
-obj_to_id_map = {
-    'antiMalwareConfigurations': ['manualScanConfigurationID', 'scheduledScanConfigurationID', 'realTimeScanConfigurationID'],
-    'schedules': ['realTimeScanScheduleID'],
-    'directoryLists': ['directoryListID', 'excludedDirectoryListID'],
-    'fileLists': ['excludedFileListID', 'excludedProcessImageFileListID'],
-    'fileExtensionLists' : ['excludedFileExtensionListID', 'fileExtensionListID']
-}
-
 objs_to_objs_function = {
     'schedules': 'update_or_create_schedules_to_dsm',
     'fileExtensionLists': 'update_or_create_file_extension_lists_to_dsm',
@@ -68,6 +60,14 @@ objs_to_objs_function = {
     'antiMalwareConfigurations': 'update_or_create_anti_malware_to_dsm',
     'policies': 'update_or_create_policy_to_dsm',
     'computers': 'update_or_create_computer_to_dsm',
+}
+
+obj_to_id_map = {
+    'antiMalwareConfigurations': ['manualScanConfigurationID', 'scheduledScanConfigurationID', 'realTimeScanConfigurationID'],
+    'schedules': ['realTimeScanScheduleID'],
+    'directoryLists': ['directoryListID', 'excludedDirectoryListID'],
+    'fileLists': ['excludedFileListID', 'excludedProcessImageFileListID'],
+    'fileExtensionLists' : ['excludedFileExtensionListID', 'fileExtensionListID']
 }
 
 objs_order = [
@@ -83,6 +83,7 @@ objs_order = [
     'contexts',
     'statefulConfigurations',
     'firewallRules',
+    'logInspectionRules',
     'policies',
     'computers',
     ]
@@ -100,6 +101,7 @@ objs_to_objs_properties = {
     'contexts': 'contexts',
     'statefulConfigurations': 'stateful_configurations',
     'firewallRules': 'firewall_rules',
+    'logInspectionRules': 'log_inspection_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
@@ -117,6 +119,7 @@ objs_to_objs_klass = {
     'contexts': 'Contexts',
     'statefulConfigurations': 'StatefulConfigurations',
     'firewallRules': 'FirewallRules',
+    'logInspectionRules': 'LogInspectionRules',
     'policies': 'Policies',
     'computers': 'Computers',
 }
@@ -134,6 +137,7 @@ objs_to_objs_list = {
     'contexts': 'list[Contexts]',
     'statefulConfigurations': 'list[StatefulConfigurations]',
     'firewallRules': 'list[FirewallRules]',
+    'logInspectionRules': 'list[LogInspectionRules]',
     'policies': 'list[Policies]',
     'computers': 'list[Computers]',
 }
@@ -151,6 +155,7 @@ objs_to_obj_klass = {
     'contexts': 'Context',
     'statefulConfigurations': 'StatefulConfiguration',
     'firewallRules': 'FirewallRule',
+    'logInspectionRules': 'LogInspectionRule',
     'policies': 'Policy',
     'computers': 'Computer',
 }
@@ -168,6 +173,7 @@ objs_to_obj_identity = {
     'contexts': 'name',
     'statefulConfigurations': 'name',
     'firewallRules': 'name',
+    'logInspectionRules': 'name',
     'policies': 'name',
     'computers': 'hostName',
 }
@@ -185,6 +191,7 @@ objs_to_obj_method = {
     'contexts': 'context',
     'statefulConfigurations': 'stateful_configuration',
     'firewallRules': 'firewall_rule',
+    'logInspectionRules': 'log_inspection_rule',
     'policies': 'policy',
     'computers': 'computer',
 }
@@ -202,6 +209,7 @@ objs_to_objs_method = {
     'contexts': 'contexts',
     'statefulConfigurations': 'stateful_configurations',
     'firewallRules': 'firewall_rules',
+    'logInspectionRules': 'log_inspection_rules',
     'policies': 'policies',
     'computers': 'computers',
 }
