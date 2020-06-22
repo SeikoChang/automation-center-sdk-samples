@@ -32,13 +32,13 @@ class DSApiClient(api.ApiClient):
 
         super(DSApiClient, self).__init__(configuration=self.configuration)
 
-        #dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
-        dsm_property_file = dsm_property
+        dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
+        #dsm_property_file = dsm_property
         if not os.path.exists(dsm_property_file):
             raise Exception('exception due to dsm propery file = %s not found' % dsm_property_file)
 
-        #computer_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), computer_property)
-        computer_property_file = computer_property
+        computer_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), computer_property)
+        #computer_property_file = computer_property
         if not os.path.exists(computer_property_file):
             raise Exception('exception due to configuration propery file = %s not found' % computer_property_file)
 
@@ -60,7 +60,7 @@ class DSApiClient(api.ApiClient):
                 #print("self.%s = %s(self)" %(name, name))
         '''
 
-    def _create_api_key(self, url, session):
+    def _create_api_key(self, configuration):
         import time
 
         timestr = datetime.now().strftime("%Y%m%d.%H:%M:%S.%f")
@@ -69,8 +69,8 @@ class DSApiClient(api.ApiClient):
 
         header = {"API-Version": "v1",
                     "Content-Type": "application/json",
-                    "RID": session['rid'],
-                    "Cookie": "sid={}".format(session['sid'])}
+                    "RID": self.session['rid'],
+                    "Cookie": "sid={}".format(self.session['sid'])}
 
         payload = {
             "keyName": "auto_generated_by_PIT_on_%s" % timestr,
@@ -83,7 +83,7 @@ class DSApiClient(api.ApiClient):
         }
 
         #print("header: %s, payload: %s" % (header, payload))
-        result = requests.post(url + "/apikeys",
+        result = requests.post(configuration.host + "/apikeys",
                                 headers=header,
                                 data=json.dumps(payload),
                                 verify=False)
@@ -93,10 +93,10 @@ class DSApiClient(api.ApiClient):
         #print('API Key is %s' % api_key)
         return api_key
 
-    def _create_session(self, url, username, password):
+    def _create_session(self, configuration):
         header = {"API-Version": "v1", "Content-Type": "application/json"}
-        payload = {"userName": username, "password": password}
-        result = requests.post(url + "/sessions",
+        payload = {"userName": configuration.username, "password": configuration.password}
+        result = requests.post(configuration.host + "/sessions",
                                 headers=header,
                                 data=json.dumps(payload),
                                 verify=False)
@@ -138,28 +138,24 @@ class DSApiClient(api.ApiClient):
         with open(dsm_property_file) as raw_properties:
             dsm_properties = json.load(raw_properties)
 
-        url = dsm_properties.get('url', None)
-        username = dsm_properties.get('userName', None)
-        password = dsm_properties.get('password', None)
+        configuration.host = dsm_properties.get('url', None)
+        configuration.username = dsm_properties.get('userName', None)
+        configuration.password = dsm_properties.get('password', None)
         host = dsm_properties.get('host', None)
         port = dsm_properties.get('port', None)
         self.secret_key = dsm_properties.get('secretkey', None)
 
-        if not url:
-            url = "https://{}:{}/api".format(host, port)
+        if not configuration.host:
+            configuration.host = "https://{}:{}/api".format(host, port)
 
-        configuration.host = url
         session = None
         if not self.secret_key:
-            self.session = self._create_session(url, username, password)
+            self.session = self._create_session(configuration)
             self.sid = self.session['sid']
             self.rid = self.session['rid']
-            self.secret_key = self._create_api_key(url, self.session)
+            self.secret_key = self._create_api_key(configuration)
 
         configuration.api_key['api-secret-key'] = self.secret_key
-        configuration.host = url
-        configuration.username = username
-        configuration.password = password
 
         #pprint(vars(configuration))
         return configuration
