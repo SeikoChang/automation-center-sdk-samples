@@ -137,30 +137,33 @@ class DSApiClient(api.ApiClient):
         else:
             return {"warning": "Please make sure you had created the session."}
 
-    def load_property(self, property_file):
-        with open(property_file) as raw_properties:
-            properties = json.load(raw_properties)
+    def get_DSM_WSDL(self, configuration):
+        DSM_URL = 'https://{ip}:{port}'.format(ip=self.host, port=self.port)
 
-        return properties
+        try:
+            print('Connecting to %s' % DSM_URL)
+            self.dsm = suds.client.Client(DSM_URL + '/webservice/Manager?WSDL')
+            if self.tenantAccount:
+                self.sID = dsm.service.authenticateTenant(self.tenantAccount, configuration.username, configuration.password)
+            else:
+                self.sID = dsm.service.authenticate(configuration.username, configuration.password)
+            print('%s: %s' % ('Login DSM'.ljust(20), '[ OK ]'))
+        except:
+            print('%s: %s' % ('Login DSM'.ljust(20), '[ ERROR ]'))
+            print('DSM service might not available.')
+            self.dsm = self.sID = None
 
-    def load_property_key(self, properties, key, default=None):
-        return properties.get(key, default)
+        return self.dsm, self.sID
 
-    def generate_configuration(self):
-        configuration = Configuration()
+    def close_DSM_WSDL(self):
+        rtv = None
+        if all([self.dsm, self.sID]):
+            try:
+                rtv = dsm.service.endSession(self.sID)
+            except:
+                print('Generic Exception: ' + traceback.format_exc())
 
-        # Get the DSM URL and API key from a JSON file
-        dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
-
-        with open(dsm_property_file) as raw_properties:
-            dsm_properties = json.load(raw_properties)
-
-        configuration.host = dsm_properties.get('url', None)
-        configuration.username = dsm_properties.get('userName', None)
-        configuration.password = dsm_properties.get('password', None)
-        host = dsm_properties.get('host', None)
-        port = dsm_properties.get('port', None)
-        self.secret_key = dsm_properties.get('secretkey', None)
+        return rtv
 
     def create_api_key(self, configuration, tenant=False):
         import time
