@@ -13,8 +13,8 @@ import _func
 
 
 def main(dsapi=DSApiClient()):
-    #_func.policies_operation(dsapi, 'computer_properties.json')
-    _func.policies_dump(dsapi, 'computer_properties.json')
+    _func.policies_operation(dsapi, 'computer_properties.json')
+    #_func.policies_dump(dsapi, 'computer_properties.json')
 
 if __name__ == '__main__':
     main()

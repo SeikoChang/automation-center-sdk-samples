@@ -71,14 +71,14 @@ obj_to_id_map = {
 }
 
 objs_order = [
-    'schedules',
-    'fileExtensionLists',
-    'directoryLists',
-    'fileLists',
-    'antiMalwareConfigurations',
+    #'schedules',
+    #'fileExtensionLists',
+    #'directoryLists',
+    #'fileLists',
+    #'antiMalwareConfigurations',
     #'interfaceTypes',
     'ipLists',
-    'macLists',
+    #'macLists',
     'portLists',
     'contexts',
     'statefulConfigurations',
@@ -1662,7 +1662,7 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
         key = ds_obj
         value = objs_to_obj_klass[key]
         if key in computer_properties.keys():
-            print('key =  [%s] value = [%s]' % (key, value))
+            print('key = [%s] value = [%s]' % (key, value))
             #objs = deserialize_from_object(computer_properties[key], value)
             for ind, item in enumerate(computer_properties[key]):
                 #print(type(item))
@@ -1700,9 +1700,12 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
                                     search_filter = api.SearchFilter(None, [search_criteria])
                                     search_filter.max_items = 1
                                     api_response = getattr(api_instance, api_name)(api_version=api_version, search_filter=search_filter)
+                                    #pprint(api_response.to_dict())
                                     act_obj_id = getattr(api_response, objs_to_objs_properties[key])[0].id
+                                    print(act_obj_id)
                                     api_name = 'modify_{api}'.format(api=objs_to_obj_method[key])
                                     api_response = getattr(api_instance, api_name)(act_obj_id, obj, api_version=api_version)
+                                    #pprint(api_response.to_dict())
                                 except:
                                     print(e)
 
@@ -1717,6 +1720,8 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
                             return False
 
                     if api_response:
+                        #pprint(api_response)
+                        #pprint(api_response.to_dict())
                         new_obj_id = api_response.to_dict()['id']
                         print('new id = [%s]' % new_obj_id)
                         computer_properties[key][ind]['id'] = new_obj_id
