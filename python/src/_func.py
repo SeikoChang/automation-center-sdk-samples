@@ -40,16 +40,16 @@ obj_contained_id_map = {
 }
 
 denpendecy_map = {
-    'manualScanConfigurationID':'antiMalwareConfigurations',
-    'scheduledScanConfigurationID':'antiMalwareConfigurations',
-    'realTimeScanScheduleID':'schedules',
-    'realTimeScanConfigurationID':'antiMalwareConfigurations',
-    'directoryListID':'directoryLists',
-    'excludedDirectoryListID':'directoryLists',
-    'excludedFileListID':'fileLists',
-    'excludedProcessImageFileListID':'fileLists',
-    'excludedFileExtensionListID':'fileExtensionLists',
-    'fileExtensionListID':'fileExtensionLists'
+    'manualScanConfigurationID': 'antiMalwareConfigurations',
+    'scheduledScanConfigurationID': 'antiMalwareConfigurations',
+    'realTimeScanScheduleID': 'schedules',
+    'realTimeScanConfigurationID': 'antiMalwareConfigurations',
+    'directoryListID': 'directoryLists',
+    'excludedDirectoryListID': 'directoryLists',
+    'excludedFileListID': 'fileLists',
+    'excludedProcessImageFileListID': 'fileLists',
+    'excludedFileExtensionListID': 'fileExtensionLists',
+    'fileExtensionListID': 'fileExtensionLists'
 }
 
 objs_to_objs_function = {
@@ -67,18 +67,18 @@ obj_to_id_map = {
     'schedules': ['realTimeScanScheduleID'],
     'directoryLists': ['directoryListID', 'excludedDirectoryListID'],
     'fileLists': ['excludedFileListID', 'excludedProcessImageFileListID'],
-    'fileExtensionLists' : ['excludedFileExtensionListID', 'fileExtensionListID']
+    'fileExtensionLists': ['excludedFileExtensionListID', 'fileExtensionListID']
 }
 
 objs_order = [
-    #'schedules',
-    #'fileExtensionLists',
-    #'directoryLists',
-    #'fileLists',
-    #'antiMalwareConfigurations',
-    #'interfaceTypes',
+    'schedules',
+    'fileExtensionLists',
+    'directoryLists',
+    'fileLists',
+    'antiMalwareConfigurations',
+    # 'interfaceTypes',
     'ipLists',
-    #'macLists',
+    'macLists',
     'portLists',
     'contexts',
     'statefulConfigurations',
@@ -93,7 +93,7 @@ objs_order = [
     'intrusionPreventionRules',
     'policies',
     'computers',
-    ]
+]
 
 objs_to_objs_properties = {
     'schedules': 'schedules',
@@ -275,17 +275,19 @@ def setattr_from_attribute_map(object, attribute_map):
             # bybass those attribute not set to allowed_values
             print('unable to set attr = [%s] by [%s]' % (k, v))
 
+
 def get_attr_from_config(config):
     for k, v in config.items():
         #print('global {0}; {0}="{1}"'.format(k, v))
         try:
-            exec('global {0}; {0}="{1}"'.format(k, str(v.decode('utf-8')).replace('.', ' '))) in globals(), locals()
+            exec('global {0}; {0}="{1}"'.format(
+                k, str(v.decode('utf-8')).replace('.', ' '))) in globals(), locals()
         except:
             # bybass those value not valid, for example, string contain "."
             print('unable to assign attr = [%s] by [%s]' % (k, v))
 
-    #print(globals())
-    #print(locals())
+    # print(globals())
+    # print(locals())
 
 
 def get_smart_scan_state_from_policy(dsapi):
@@ -308,18 +310,20 @@ def get_smart_scan_state_from_policy(dsapi):
 
     overrides = False
 
-    #pprint(vars(configuration))
+    # pprint(vars(configuration))
 
     try:
         # Get the policy details from Deep Security Manager
         api_instance = api.PoliciesApi(api.ApiClient(configuration))
-        policy =  api_instance.describe_policy(policy_id=policy_id, api_version=api_version, overrides=overrides)
-        #pprint(dir(policy))
-        #pprint(vars(policy))
+        policy = api_instance.describe_policy(
+            policy_id=policy_id, api_version=api_version, overrides=overrides)
+        # pprint(dir(policy))
+        # pprint(vars(policy))
         return policy.policy_settings.anti_malware_setting_smart_scan_state.value
 
     except api_exception as e:
         return "Exception: " + str(e)
+
 
 def set_smart_scan_state_from_policy(dsapi):
     """ Sets the value of the firewall_setting_network_engine_mode property of a policy.
@@ -347,23 +351,25 @@ def set_smart_scan_state_from_policy(dsapi):
     value = computer_properties['policies'][0]['policySettings']['antiMalwareSettingSmartScanState']['value']
     print('value = ', value)
 
-
     # Create a SettingValue object and set the value to either "Inline" or "Tap"
     smart_scan_state = api.SettingValue()
     smart_scan_state.value = value
     PolicyValue = smart_scan_state
     PolicySetting = 'anti_malware_setting_smart_scan_state'
 
-    policy = Policy(policy_settings=PolicySettings(anti_malware_setting_smart_scan_state=SettingValue(value)))
+    policy = Policy(policy_settings=PolicySettings(
+        anti_malware_setting_smart_scan_state=SettingValue(value)))
 
     try:
         # Modify the setting on Deep Security Manager
         api_instance = api.PoliciesApi(api.ApiClient(configuration))
-        api_instance.modify_policy(policy_id, policy, api_version, overrides=False)
+        api_instance.modify_policy(
+            policy_id, policy, api_version, overrides=False)
         return api_instance.modify_policy(policy_id, policy, api_version, overrides=False).policy_settings.anti_malware_setting_smart_scan_state.value
 
     except api_exception as e:
         return "Exception: " + str(e)
+
 
 def get_smart_scan_state_from_computer(dsapi):
     """ Gets the value of the firewall_setting_network_engine_mode property of a policy.
@@ -391,13 +397,15 @@ def get_smart_scan_state_from_computer(dsapi):
     try:
         # Get the policy details from Deep Security Manager
         api_instance = api.ComputersApi(api.ApiClient(configuration))
-        computer =  api_instance.describe_computer(computer_id=computer_id, api_version=api_version, overrides=overrides)
-        #pprint(dir(policy))
-        #pprint(vars(policy))
+        computer = api_instance.describe_computer(
+            computer_id=computer_id, api_version=api_version, overrides=overrides)
+        # pprint(dir(policy))
+        # pprint(vars(policy))
         return computer.computer_settings.anti_malware_setting_smart_scan_state.value
 
     except api_exception as e:
         return "Exception: " + str(e)
+
 
 def set_smart_scan_state_from_computer(dsapi):
     """ Sets the value of the firewall_setting_network_engine_mode property of a policy.
@@ -445,7 +453,8 @@ def set_smart_scan_state_from_computer(dsapi):
     try:
         # Modify the setting on Deep Security Manager
         api_instance = api.ComputersApi(api.ApiClient(configuration))
-        api_instance.modify_computer(computer_id, computer, api_version, overrides=overrides)
+        api_instance.modify_computer(
+            computer_id, computer, api_version, overrides=overrides)
         return api_instance.modify_computer(computer_id, computer, api_version, overrides=overrides).computer_settings.anti_malware_setting_smart_scan_state.value
 
     except api_exception as e:
@@ -475,8 +484,9 @@ def get_settings_from_policy(dsapi, computer_property_file='computer_properties.
 
     try:
         api_instance = api.PoliciesApi(api.ApiClient(configuration))
-        api_response = api_instance.describe_policy(policy_id=policy_id, api_version=api_version, overrides=overrides)
-        #pprint(api_response)
+        api_response = api_instance.describe_policy(
+            policy_id=policy_id, api_version=api_version, overrides=overrides)
+        # pprint(api_response)
 
         # write back to computer_properties
         computer_properties = dsapi.computer_properties
@@ -489,10 +499,12 @@ def get_settings_from_policy(dsapi, computer_property_file='computer_properties.
                     break
 
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=4, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=4,
+                      separators=(',', ':'), default=json_serial)
 
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.modify_computer: %s\n" % e)
+
 
 def set_settings_from_policy(dsapi, computer_property_file='computer_properties.json'):
     api = dsapi.api
@@ -519,8 +531,8 @@ def set_settings_from_policy(dsapi, computer_property_file='computer_properties.
                 obj_val = v
                 #print(k, v ,m, n, obj_key, obj_val)
                 break
-        #print(obj_key)
-        setattr (policy_settings, obj_key, obj_val)
+        # print(obj_key)
+        setattr(policy_settings, obj_key, obj_val)
 
     policy = api.Policy()
     policy.policy_settings = policy_settings
@@ -528,10 +540,12 @@ def set_settings_from_policy(dsapi, computer_property_file='computer_properties.
 
     try:
         api_instance = api.PoliciesApi(api.ApiClient(configuration))
-        api_response = api_instance.modify_policy(policy_id=policy_id, policy=policy, api_version=api_version, overrides=overrides)
-        #pprint(api_response)
+        api_response = api_instance.modify_policy(
+            policy_id=policy_id, policy=policy, api_version=api_version, overrides=overrides)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.modify_computer: %s\n" % e)
+
 
 def get_settings_from_computer(dsapi, computer_property_file='computer_properties.json'):
     api = dsapi.api
@@ -556,8 +570,9 @@ def get_settings_from_computer(dsapi, computer_property_file='computer_propertie
 
     try:
         api_instance = api.ComputersApi(api.ApiClient(configuration))
-        api_response = api_instance.describe_computer(computer_id=computer_id, api_version=api_version, expand=expand, overrides=overrides)
-        #pprint(api_response)
+        api_response = api_instance.describe_computer(
+            computer_id=computer_id, api_version=api_version, expand=expand, overrides=overrides)
+        # pprint(api_response)
 
         # write back to computer_properties
         computer_properties = dsapi.computer_properties
@@ -570,10 +585,12 @@ def get_settings_from_computer(dsapi, computer_property_file='computer_propertie
                     break
 
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=4, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=4,
+                      separators=(',', ':'), default=json_serial)
 
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.modify_computer: %s\n" % e)
+
 
 def set_settings_from_computer(dsapi, computer_property_file='computer_properties.json'):
     api = dsapi.api
@@ -597,10 +614,10 @@ def set_settings_from_computer(dsapi, computer_property_file='computer_propertie
             if computer_settings.attribute_map[m] == k:
                 obj_key = m
                 obj_val = v
-                print(k, v ,m, n, obj_key, obj_val)
+                print(k, v, m, n, obj_key, obj_val)
                 break
-        #print(obj_key)
-        setattr (computer_settings, obj_key, obj_val)
+        # print(obj_key)
+        setattr(computer_settings, obj_key, obj_val)
 
     computer = api.Computer()
     computer.computer_settings = computer_settings
@@ -608,8 +625,9 @@ def set_settings_from_computer(dsapi, computer_property_file='computer_propertie
 
     try:
         api_instance = api.ComputersApi(api.ApiClient(configuration))
-        api_response = api_instance.modify_computer(computer_id, computer, api_version, overrides=overrides)
-        #pprint(api_response)
+        api_response = api_instance.modify_computer(
+            computer_id, computer, api_version, overrides=overrides)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.modify_computer: %s\n" % e)
 
@@ -623,12 +641,14 @@ def get_schedule_from_dsm(dsapi, schedule_id=None):
     api_response = None
     api_instance = api.SchedulesApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_schedule(schedule_id=schedule_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_schedule(
+            schedule_id=schedule_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling SchedulesApi.describe_schedule: %s\n" % e)
 
     return api_response
+
 
 def search_schedules_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -640,12 +660,14 @@ def search_schedules_from_dsm(dsapi, **search_filter):
     api_instance = api.SchedulesApi(api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_schedules(api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_schedules(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling SchedulesApi.search_schedules: %s\n" % e)
 
     return api_response
+
 
 def list_schedules_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -663,7 +685,7 @@ def list_schedules_from_dsm(dsapi, computer_property_file=None, update=False):
     api_instance = api.SchedulesApi(api.ApiClient(configuration))
     try:
         api_response = api_instance.list_schedules(api_version=api_version)
-        #pprint(api_response)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling SchedulesApi.list_schedules: %s\n" % e)
 
@@ -675,20 +697,27 @@ def list_schedules_from_dsm(dsapi, computer_property_file=None, update=False):
             configs = api_response.to_dict()['schedules']
             new_config = list()
             for config in configs:
-                new_config.append({name_map[name]: val for name, val in config.items()})
-            computer_properties['schedules'] = new_config # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['name'].decode('utf-8') for x in api_response.to_dict()['schedules']])
-            all_name_in_config = set([x['name'] for x in computer_properties['schedules']])
+                new_config.append(
+                    {name_map[name]: val for name, val in config.items()})
+            # to fullfill payload format
+            computer_properties['schedules'] = new_config
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['name'].decode('utf-8')
+                                   for x in api_response.to_dict()['schedules']])
+            all_name_in_config = set([x['name']
+                                      for x in computer_properties['schedules']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['schedules']:
                 if dsm['name'] in update_set:
-                    new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    computer_properties['schedules'].append(new_dsm) # to fullfill payload format
+                    new_dsm = {name_map[name]                               : val for name, val in dsm.items()}
+                    computer_properties['schedules'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_schedules_to_dsm(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
@@ -704,9 +733,11 @@ def update_or_create_schedules_to_dsm(dsapi, computer_property_file=None, delete
 
     all_schedules = list_schedules_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_schedules.to_dict()['schedules']])
+    all_name_in_dsm = set([x['name'].decode('utf-8')
+                           for x in all_schedules.to_dict()['schedules']])
     print(all_name_in_dsm)
-    all_name_in_config = set([x['name'] for x in computer_properties['schedules']])
+    all_name_in_config = set([x['name']
+                              for x in computer_properties['schedules']])
     print(all_name_in_config)
     #print(all_name_in_dsm & all_name_in_config)
     #print(all_name_in_dsm | all_name_in_config)
@@ -728,32 +759,38 @@ def update_or_create_schedules_to_dsm(dsapi, computer_property_file=None, delete
                 schedule_id = dsm['id']
                 print('modify_schedule for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_schedule(schedule_id=schedule_id, schedule=schedule, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_schedule(
+                        schedule_id=schedule_id, schedule=schedule, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling SchedulesApi.modify_schedule: %s\n" % e)
+                    print(
+                        "An exception occurred when calling SchedulesApi.modify_schedule: %s\n" % e)
 
                 break
         else:
             # create_schedule
             print('create_schedule for name = [%s]' % name)
             try:
-                api_response = api_instance.create_schedule(schedule=schedule, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_schedule(
+                    schedule=schedule, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling SchedulesApi.create_schedule: %s\n" % e)
+                print(
+                    "An exception occurred when calling SchedulesApi.create_schedule: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_schedules.to_dict()['schedules']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_schedule
                 print('delete_schedule for name = [%s]' % dsm['name'])
                 schedule_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_schedule(schedule_id=schedule_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_schedule(
+                        schedule_id=schedule_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling SchedulesApi.delete_schedule: %s\n" % e)
+                    print(
+                        "An exception occurred when calling SchedulesApi.delete_schedule: %s\n" % e)
 
     return True
 
@@ -767,12 +804,15 @@ def get_file_list_from_dsm(dsapi, file_list_id=None):
     api_response = None
     api_instance = api.FileListsApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_file_list(file_list_id=file_list_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_file_list(
+            file_list_id=file_list_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
-        print("An exception occurred when calling FileListsApi.describe_file_list: %s\n" % e)
+        print(
+            "An exception occurred when calling FileListsApi.describe_file_list: %s\n" % e)
 
     return api_response
+
 
 def search_file_lists_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -784,12 +824,14 @@ def search_file_lists_from_dsm(dsapi, **search_filter):
     api_instance = api.FileListsApi(api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_file_lists(api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_file_lists(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling FileListsApi.search_file_lists: %s\n" % e)
 
     return api_response
+
 
 def list_file_lists_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -807,7 +849,7 @@ def list_file_lists_from_dsm(dsapi, computer_property_file=None, update=False):
     api_instance = api.FileListsApi(api.ApiClient(configuration))
     try:
         api_response = api_instance.list_file_lists(api_version=api_version)
-        #pprint(api_response)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling FileListsApi.list_file_lists: %s\n" % e)
 
@@ -815,24 +857,32 @@ def list_file_lists_from_dsm(dsapi, computer_property_file=None, update=False):
     if computer_property_file and os.path.exists(computer_property_file):
         file_list = api.FileList()
         name_map = file_list.attribute_map
-        if not update: # update those items in dsm but not in property file
-            configs = api_response.to_dict()['file_lists'] # to fullfill payload format
+        if not update:  # update those items in dsm but not in property file
+            # to fullfill payload format
+            configs = api_response.to_dict()['file_lists']
             new_config = list()
             for config in configs:
-                new_config.append({name_map[name]: val for name, val in config.items()})
-            computer_properties['fileLists'] = new_config # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['name'].decode('utf-8') for x in api_response.to_dict()['file_lists']])
-            all_name_in_config = set([x['name'] for x in computer_properties['fileLists']])
+                new_config.append(
+                    {name_map[name]: val for name, val in config.items()})
+            # to fullfill payload format
+            computer_properties['fileLists'] = new_config
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['name'].decode('utf-8')
+                                   for x in api_response.to_dict()['file_lists']])
+            all_name_in_config = set([x['name']
+                                      for x in computer_properties['fileLists']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['file_lists']:
                 if dsm['name'] in update_set:
-                    new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    computer_properties['fileLists'].append(new_dsm) # to fullfill payload format
+                    new_dsm = {name_map[name]                               : val for name, val in dsm.items()}
+                    computer_properties['fileLists'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_file_lists_to_dsm(dsapi, computer_property_file=None, delete=False):
 
@@ -849,8 +899,10 @@ def update_or_create_file_lists_to_dsm(dsapi, computer_property_file=None, delet
 
     all_file_lists = list_file_lists_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_file_lists.to_dict()['file_lists']])
-    all_name_in_config = set([x['name'] for x in computer_properties['fileLists']])
+    all_name_in_dsm = set([x['name'].decode('utf-8')
+                           for x in all_file_lists.to_dict()['file_lists']])
+    all_name_in_config = set([x['name']
+                              for x in computer_properties['fileLists']])
 
     for config in computer_properties['fileLists']:
         file_list_id = config['ID']
@@ -868,32 +920,38 @@ def update_or_create_file_lists_to_dsm(dsapi, computer_property_file=None, delet
                 file_list_id = dsm['id']
                 print('modify_file_list for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_file_list(file_list_id=file_list_id, file_list=file_list, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_file_list(
+                        file_list_id=file_list_id, file_list=file_list, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling FileListsApi.modify_file_list: %s\n" % e)
+                    print(
+                        "An exception occurred when calling FileListsApi.modify_file_list: %s\n" % e)
 
                 break
         else:
             # create_file_list
             print('create_file_list for name = [%s]' % name)
             try:
-                api_response = api_instance.create_file_list(file_list=file_list, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_file_list(
+                    file_list=file_list, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling FileListsApi.create_file_list: %s\n" % e)
+                print(
+                    "An exception occurred when calling FileListsApi.create_file_list: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_file_lists.to_dict()['file_lists']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_file_list
                 print('delete_file_list for name = [%s]' % dsm['name'])
                 file_list_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_file_list(file_list_id=file_list_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_file_list(
+                        file_list_id=file_list_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling FileListsApi.delete_file_list: %s\n" % e)
+                    print(
+                        "An exception occurred when calling FileListsApi.delete_file_list: %s\n" % e)
 
     return True
 
@@ -907,12 +965,14 @@ def get_file_extension_list_from_dsm(dsapi, file_extension_list_id=None):
     api_response = None
     api_instance = api.FileExtensionListsApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_file_extension_list(file_extension_list_id=file_extension_list_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_file_extension_list(
+            file_extension_list_id=file_extension_list_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling FileExtensionListsApi.describe_file_extension_list: %s\n" % e)
 
     return api_response
+
 
 def search_file_extension_lists_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -924,12 +984,14 @@ def search_file_extension_lists_from_dsm(dsapi, **search_filter):
     api_instance = api.FileExtensionListsApi(api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_file_extension_lists(api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_file_extension_lists(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling FileExtensionListsApi.search_file_extension_lists: %s\n" % e)
 
     return api_response
+
 
 def list_file_extension_lists_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -946,8 +1008,9 @@ def list_file_extension_lists_from_dsm(dsapi, computer_property_file=None, updat
     api_response = None
     api_instance = api.FileExtensionListsApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.list_file_extension_lists(api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.list_file_extension_lists(
+            api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling FileExtensionListsApi.list_file_extension_lists: %s\n" % e)
 
@@ -955,24 +1018,32 @@ def list_file_extension_lists_from_dsm(dsapi, computer_property_file=None, updat
     if computer_property_file and os.path.exists(computer_property_file):
         file_extension_list = api.FileExtensionList()
         name_map = file_extension_list.attribute_map
-        if not update: # update those items in dsm but not in property file
-            configs = api_response.to_dict()['file_extension_lists'] # to fullfill payload format
+        if not update:  # update those items in dsm but not in property file
+            # to fullfill payload format
+            configs = api_response.to_dict()['file_extension_lists']
             new_config = list()
             for config in configs:
-                new_config.append({name_map[name]: val for name, val in config.items()})
-            computer_properties['antiMalwareConfigurations'] = new_config # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['name'].decode('utf-8') for x in api_response.to_dict()['file_extension_lists']])
-            all_name_in_config = set([x['name'] for x in computer_properties['fileExtensionLists']])
+                new_config.append(
+                    {name_map[name]: val for name, val in config.items()})
+            # to fullfill payload format
+            computer_properties['antiMalwareConfigurations'] = new_config
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['name'].decode(
+                'utf-8') for x in api_response.to_dict()['file_extension_lists']])
+            all_name_in_config = set(
+                [x['name'] for x in computer_properties['fileExtensionLists']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['file_extension_lists']:
                 if dsm['name'] in update_set:
-                    new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    computer_properties['fileExtensionLists'].append(new_dsm) # to fullfill payload format
+                    new_dsm = {name_map[name]                               : val for name, val in dsm.items()}
+                    computer_properties['fileExtensionLists'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_file_extension_lists_to_dsm(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
@@ -988,8 +1059,10 @@ def update_or_create_file_extension_lists_to_dsm(dsapi, computer_property_file=N
 
     all_file_extension_lists = list_file_extension_lists_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_file_extension_lists.to_dict()['file_extension_lists']])
-    all_name_in_config = set([x['name'] for x in computer_properties['fileExtensionLists']])
+    all_name_in_dsm = set([x['name'].decode(
+        'utf-8') for x in all_file_extension_lists.to_dict()['file_extension_lists']])
+    all_name_in_config = set(
+        [x['name'] for x in computer_properties['fileExtensionLists']])
 
     for config in computer_properties['fileExtensionLists']:
         file_extension_list_id = config['ID']
@@ -1007,32 +1080,39 @@ def update_or_create_file_extension_lists_to_dsm(dsapi, computer_property_file=N
                 file_extension_list_id = dsm['id']
                 print('file_extension_list_id for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_file_extension_list(file_extension_list_id=file_extension_list_id, file_extension_list=file_extension_list, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_file_extension_list(
+                        file_extension_list_id=file_extension_list_id, file_extension_list=file_extension_list, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling FileExtensionListsApi.modify_file_extension_list: %s\n" % e)
+                    print(
+                        "An exception occurred when calling FileExtensionListsApi.modify_file_extension_list: %s\n" % e)
 
                 break
         else:
             # create_file_extension_list
             print('create_file_extension_list for name = [%s]' % name)
             try:
-                api_response = api_instance.create_file_extension_list(file_extension_list=file_extension_list, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_file_extension_list(
+                    file_extension_list=file_extension_list, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling FileExtensionListsApi.create_file_extension_list: %s\n" % e)
+                print(
+                    "An exception occurred when calling FileExtensionListsApi.create_file_extension_list: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_file_extension_lists.to_dict()['file_extension_lists']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_file_extension_list
-                print('delete_file_extension_list for name = [%s]' % dsm['name'])
+                print(
+                    'delete_file_extension_list for name = [%s]' % dsm['name'])
                 file_extension_list_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_file_extension_list(file_extension_list_id=file_extension_list_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_file_extension_list(
+                        file_extension_list_id=file_extension_list_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling FileExtensionListsApi.delete_file_extension_list: %s\n" % e)
+                    print(
+                        "An exception occurred when calling FileExtensionListsApi.delete_file_extension_list: %s\n" % e)
 
     return True
 
@@ -1046,12 +1126,14 @@ def get_directory_list_from_dsm(dsapi, directory_list_id=None):
     api_response = None
     api_instance = api.DirectoryListsApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_directory_list(directory_list_id=directory_list_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_directory_list(
+            directory_list_id=directory_list_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling DirectoryListsApi.describe_directory_list: %s\n" % e)
 
     return api_response
+
 
 def search_directory_lists_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -1063,12 +1145,14 @@ def search_directory_lists_from_dsm(dsapi, **search_filter):
     api_instance = api.DirectoryListsApi(api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_directory_lists(api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_directory_lists(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling DirectoryListsApi.search_directory_lists: %s\n" % e)
 
     return api_response
+
 
 def list_directory_lists_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -1085,8 +1169,9 @@ def list_directory_lists_from_dsm(dsapi, computer_property_file=None, update=Fal
     api_response = None
     api_instance = api.DirectoryListsApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.list_directory_lists(api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.list_directory_lists(
+            api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling DirectoryListsApi.list_directory_lists: %s\n" % e)
 
@@ -1094,24 +1179,32 @@ def list_directory_lists_from_dsm(dsapi, computer_property_file=None, update=Fal
     if computer_property_file and os.path.exists(computer_property_file):
         directory_list = api.DirectoryList()
         name_map = directory_list.attribute_map
-        if not update: # update those items in dsm but not in property file
-            configs = api_response.to_dict()['directory_lists'] # to fullfill payload format
+        if not update:  # update those items in dsm but not in property file
+            # to fullfill payload format
+            configs = api_response.to_dict()['directory_lists']
             new_config = list()
             for config in configs:
-                new_config.append({name_map[name]: val for name, val in config.items()})
-            computer_properties['directoryLists'] = new_config # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['name'].decode('utf-8') for x in api_response.to_dict()['directory_lists']])
-            all_name_in_config = set([x['name'] for x in computer_properties['directoryLists']])
+                new_config.append(
+                    {name_map[name]: val for name, val in config.items()})
+            # to fullfill payload format
+            computer_properties['directoryLists'] = new_config
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['name'].decode('utf-8')
+                                   for x in api_response.to_dict()['directory_lists']])
+            all_name_in_config = set(
+                [x['name'] for x in computer_properties['directoryLists']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['directory_lists']:
                 if dsm['name'] in update_set:
-                    new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    computer_properties['directoryLists'].append(new_dsm) # to fullfill payload format
+                    new_dsm = {name_map[name]                               : val for name, val in dsm.items()}
+                    computer_properties['directoryLists'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_directory_lists_to_dsm(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
@@ -1127,8 +1220,10 @@ def update_or_create_directory_lists_to_dsm(dsapi, computer_property_file=None, 
 
     all_directory_lists = list_directory_lists_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_directory_lists.to_dict()['directory_lists']])
-    all_name_in_config = set([x['name'] for x in computer_properties['directoryLists']])
+    all_name_in_dsm = set([x['name'].decode('utf-8')
+                           for x in all_directory_lists.to_dict()['directory_lists']])
+    all_name_in_config = set([x['name']
+                              for x in computer_properties['directoryLists']])
 
     for config in computer_properties['directoryLists']:
         directory_list_id = config['ID']
@@ -1146,32 +1241,38 @@ def update_or_create_directory_lists_to_dsm(dsapi, computer_property_file=None, 
                 directory_list_id = dsm['id']
                 print('modify_directory_list for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_directory_list(directory_list_id=directory_list_id, directory_list=directory_list, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_directory_list(
+                        directory_list_id=directory_list_id, directory_list=directory_list, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling DirectoryList.file_extension_list_id: %s\n" % e)
+                    print(
+                        "An exception occurred when calling DirectoryList.file_extension_list_id: %s\n" % e)
 
                 break
         else:
             # create_directory_list
             print('create_directory_list for name = [%s]' % name)
             try:
-                api_response = api_instance.create_directory_list(directory_list=directory_list, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_directory_list(
+                    directory_list=directory_list, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling DirectoryList.create_directory_list: %s\n" % e)
+                print(
+                    "An exception occurred when calling DirectoryList.create_directory_list: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_directory_lists.to_dict()['directory_lists']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_directory_list
                 print('delete_directory_list for name = [%s]' % dsm['name'])
                 directory_list_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_directory_list(directory_list_id=directory_list_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_directory_list(
+                        directory_list_id=directory_list_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling DirectoryList.delete_directory_list: %s\n" % e)
+                    print(
+                        "An exception occurred when calling DirectoryList.delete_directory_list: %s\n" % e)
 
     return True
 
@@ -1183,14 +1284,17 @@ def get_anti_malware_from_dsm(dsapi, anti_malware_id=None):
     configuration = dsapi.configuration
 
     api_response = None
-    api_instance = api.AntiMalwareConfigurationsApi(api.ApiClient(configuration))
+    api_instance = api.AntiMalwareConfigurationsApi(
+        api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_anti_malware(anti_malware_id=anti_malware_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_anti_malware(
+            anti_malware_id=anti_malware_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling AntiMalwareConfigurationsApi.describe_anti_malware: %s\n" % e)
 
     return api_response
+
 
 def search_anti_malwares_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -1199,15 +1303,18 @@ def search_anti_malwares_from_dsm(dsapi, **search_filter):
     configuration = dsapi.configuration
 
     api_response = None
-    api_instance = api.AntiMalwareConfigurationsApi(api.ApiClient(configuration))
+    api_instance = api.AntiMalwareConfigurationsApi(
+        api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_anti_malwares(api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_anti_malwares(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling AntiMalwareConfigurationsApi.search_anti_malwares: %s\n" % e)
 
     return api_response
+
 
 def list_anti_malwares_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -1222,10 +1329,11 @@ def list_anti_malwares_from_dsm(dsapi, computer_property_file=None, update=False
     computer_properties = computer_properties or dsapi.computer_properties
 
     api_response = None
-    api_instance = api.AntiMalwareConfigurationsApi(api.ApiClient(configuration))
+    api_instance = api.AntiMalwareConfigurationsApi(
+        api.ApiClient(configuration))
     try:
         api_response = api_instance.list_anti_malwares(api_version=api_version)
-        #pprint(api_response)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling AntiMalwareConfigurationsApi.list_anti_malwares: %s\n" % e)
 
@@ -1233,24 +1341,31 @@ def list_anti_malwares_from_dsm(dsapi, computer_property_file=None, update=False
     if computer_property_file and os.path.exists(computer_property_file):
         anti_malware_configuration = api.AntiMalwareConfiguration()
         name_map = anti_malware_configuration.attribute_map
-        if not update: # update those items in dsm but not in property file
+        if not update:  # update those items in dsm but not in property file
             configs = api_response.to_dict()['anti_malware_configurations']
             new_config = list()
             for config in configs:
-                new_config.append({name_map[name]: val for name, val in config.items()})
-            computer_properties['antiMalwareConfigurations'] = new_config # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['name'].decode('utf-8') for x in api_response.to_dict()['anti_malware_configurations']])
-            all_name_in_config = set([x['name'] for x in computer_properties['antiMalwareConfigurations']])
+                new_config.append(
+                    {name_map[name]: val for name, val in config.items()})
+            # to fullfill payload format
+            computer_properties['antiMalwareConfigurations'] = new_config
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['name'].decode(
+                'utf-8') for x in api_response.to_dict()['anti_malware_configurations']])
+            all_name_in_config = set(
+                [x['name'] for x in computer_properties['antiMalwareConfigurations']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['anti_malware_configurations']:
                 if dsm['name'] in update_set:
-                    new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    computer_properties['antiMalwareConfigurations'].append(new_dsm) # to fullfill payload format
+                    new_dsm = {name_map[name]                               : val for name, val in dsm.items()}
+                    computer_properties['antiMalwareConfigurations'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_anti_malware_to_dsm(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
@@ -1266,8 +1381,10 @@ def update_or_create_anti_malware_to_dsm(dsapi, computer_property_file=None, del
 
     all_anti_malware_configurations = list_anti_malwares_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_anti_malware_configurations.to_dict()['anti_malware_configurations']])
-    all_name_in_config = set([x['name'] for x in computer_properties['antiMalwareConfigurations']])
+    all_name_in_dsm = set([x['name'].decode(
+        'utf-8') for x in all_anti_malware_configurations.to_dict()['anti_malware_configurations']])
+    all_name_in_config = set(
+        [x['name'] for x in computer_properties['antiMalwareConfigurations']])
 
     for config in computer_properties['antiMalwareConfigurations']:
         get_attr_from_config(config)
@@ -1277,38 +1394,45 @@ def update_or_create_anti_malware_to_dsm(dsapi, computer_property_file=None, del
         for k, v in anti_malware_configuration.to_dict().items():
             print(k, v)
 
-        api_instance = api.AntiMalwareConfigurationsApi(api.ApiClient(configuration))
+        api_instance = api.AntiMalwareConfigurationsApi(
+            api.ApiClient(configuration))
         for dsm in all_anti_malware_configurations.to_dict()['anti_malware_configurations']:
             if dsm['name'] == name:
                 # modify_anti_malware
                 anti_malware_id = dsm['id']
                 print('modify_anti_malware for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_anti_malware(anti_malware_id=anti_malware_id , anti_malware_configuration=anti_malware_configuration, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_anti_malware(
+                        anti_malware_id=anti_malware_id, anti_malware_configuration=anti_malware_configuration, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling AntiMalwareConfigurationsApi.modify_anti_malware: %s\n" % e)
+                    print(
+                        "An exception occurred when calling AntiMalwareConfigurationsApi.modify_anti_malware: %s\n" % e)
 
                 break
         else:
             # create_anti_malware
             print('create_anti_malware for name = [%s]' % name)
             try:
-                api_response = api_instance.create_anti_malware(anti_malware_configuration=anti_malware_configuration, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_anti_malware(
+                    anti_malware_configuration=anti_malware_configuration, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling AntiMalwareConfigurationsApi.create_anti_malware: %s\n" % e)
+                print(
+                    "An exception occurred when calling AntiMalwareConfigurationsApi.create_anti_malware: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_anti_malware_configurations.to_dict()['anti_malware_configurations']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_anti_malware
                 anti_malware_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_anti_malware(anti_malware_id=anti_malware_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_anti_malware(
+                        anti_malware_id=anti_malware_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling AntiMalwareConfigurationsApi.delete_anti_malware: %s\n" % e)
+                    print(
+                        "An exception occurred when calling AntiMalwareConfigurationsApi.delete_anti_malware: %s\n" % e)
 
     return True
 
@@ -1322,12 +1446,14 @@ def get_policy_from_dsm(dsapi, policy_id=None):
     api_response = None
     api_instance = api.PoliciesApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_policy(policy_id=policy_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_policy(
+            policy_id=policy_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling PoliciesApi.describe_policy: %s\n" % e)
 
     return api_response
+
 
 def search_policies_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -1339,12 +1465,14 @@ def search_policies_from_dsm(dsapi, **search_filter):
     api_instance = api.PoliciesApi(api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_policies (api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_policies(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling PoliciesApi.search_policies : %s\n" % e)
 
     return api_response
+
 
 def list_policies_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -1362,29 +1490,36 @@ def list_policies_from_dsm(dsapi, computer_property_file=None, update=False):
     api_instance = api.PoliciesApi(api.ApiClient(configuration))
     try:
         api_response = api_instance.list_policies(api_version=api_version)
-        #pprint(api_response)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling PoliciesApi.list_policies: %s\n" % e)
 
     # write back to computer_properties
     if computer_property_file and os.path.exists(computer_property_file):
-        if not update: # update those items in dsm but not in property file
+        if not update:  # update those items in dsm but not in property file
             result = serializ(api_response)
-            #pprint(result)
-            computer_properties['policies'] = result['policies'] # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['name'].decode('utf-8') for x in api_response.to_dict()['policies']])
-            all_name_in_config = set([x['name'] for x in computer_properties['policies']])
+            # pprint(result)
+            # to fullfill payload format
+            computer_properties['policies'] = result['policies']
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['name'].decode('utf-8')
+                                   for x in api_response.to_dict()['policies']])
+            all_name_in_config = set([x['name']
+                                      for x in computer_properties['policies']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['policies']:
                 if dsm['name'] in update_set:
                     #new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    new_dsm = serializ(api_response.policies(host_name=dsm['host_name']))
-                    computer_properties['policies'].append(new_dsm) # to fullfill payload format
+                    new_dsm = serializ(api_response.policies(
+                        host_name=dsm['host_name']))
+                    computer_properties['policies'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_policy_to_dsm(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
@@ -1400,8 +1535,10 @@ def update_or_create_policy_to_dsm(dsapi, computer_property_file=None, delete=Fa
 
     all_policies = list_policies_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_policies.to_dict()['policies']])
-    all_name_in_config = set([x['name'] for x in computer_properties['policies']])
+    all_name_in_dsm = set([x['name'].decode('utf-8')
+                           for x in all_policies.to_dict()['policies']])
+    all_name_in_config = set([x['name']
+                              for x in computer_properties['policies']])
 
     for config in computer_properties['policies']:
         get_attr_from_config(config)
@@ -1418,31 +1555,37 @@ def update_or_create_policy_to_dsm(dsapi, computer_property_file=None, delete=Fa
                 policy_id = dsm['id']
                 print('modify_policy for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_policy(policy_id=policy_id, policy=policy, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_policy(
+                        policy_id=policy_id, policy=policy, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling PoliciesApi.modify_policy: %s\n" % e)
+                    print(
+                        "An exception occurred when calling PoliciesApi.modify_policy: %s\n" % e)
 
                 break
         else:
             # create_policy
             print('create_anti_malware for name = [%s]' % name)
             try:
-                api_response = api_instance.create_policy(policy=policy, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_policy(
+                    policy=policy, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling PoliciesApi.create_policy: %s\n" % e)
+                print(
+                    "An exception occurred when calling PoliciesApi.create_policy: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_policies.to_dict()['policies']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_policy
                 policy_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_policy(policy_id=policy_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_policy(
+                        policy_id=policy_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling PoliciesApi.delete_policy: %s\n" % e)
+                    print(
+                        "An exception occurred when calling PoliciesApi.delete_policy: %s\n" % e)
 
     return True
 
@@ -1456,12 +1599,14 @@ def get_computer_from_dsm(dsapi, computer_id=None):
     api_response = None
     api_instance = api.ComputersApi(api.ApiClient(configuration))
     try:
-        api_response = api_instance.describe_computer(computer_id=computer_id, api_version=api_version)
-        #pprint(api_response)
+        api_response = api_instance.describe_computer(
+            computer_id=computer_id, api_version=api_version)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.describe_computer: %s\n" % e)
 
     return api_response
+
 
 def search_computers_from_dsm(dsapi, **search_filter):
     api = dsapi.api
@@ -1473,12 +1618,14 @@ def search_computers_from_dsm(dsapi, **search_filter):
     api_instance = api.ComputersApi(api.ApiClient(configuration))
     search_filter = api.SearchFilter(search_filter)
     try:
-        api_response = api_instance.search_computers(api_version=api_version, search_filter=search_filter)
-        #pprint(api_response)
+        api_response = api_instance.search_computers(
+            api_version=api_version, search_filter=search_filter)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.search_computers: %s\n" % e)
 
     return api_response
+
 
 def list_computers_from_dsm(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -1496,29 +1643,36 @@ def list_computers_from_dsm(dsapi, computer_property_file=None, update=False):
     api_instance = api.ComputersApi(api.ApiClient(configuration))
     try:
         api_response = api_instance.list_computers(api_version=api_version)
-        #pprint(api_response)
+        # pprint(api_response)
     except api_exception as e:
         print("An exception occurred when calling ComputersApi.list_computers: %s\n" % e)
 
     # write back to computer_properties
     if computer_property_file and os.path.exists(computer_property_file):
-        if not update: # update those items in dsm but not in property file
+        if not update:  # update those items in dsm but not in property file
             result = serializ(api_response)
-            #pprint(result)
-            computer_properties['computers'] = result['computers'] # to fullfill payload format
-        else: # [keep property file] and update those items in dsm but not in property file
-            all_name_in_dsm = set([x['host_name'].decode('utf-8') for x in api_response.to_dict()['computers']])
-            all_name_in_config = set([x['hostName'] for x in computer_properties['computers']])
+            # pprint(result)
+            # to fullfill payload format
+            computer_properties['computers'] = result['computers']
+        else:  # [keep property file] and update those items in dsm but not in property file
+            all_name_in_dsm = set([x['host_name'].decode('utf-8')
+                                   for x in api_response.to_dict()['computers']])
+            all_name_in_config = set([x['hostName']
+                                      for x in computer_properties['computers']])
             update_set = (all_name_in_dsm - all_name_in_config)
             for dsm in api_response.to_dict()['computers']:
                 if dsm['host_name'] in update_set:
                     #new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                    new_dsm = serializ(api_response.computers(host_name=dsm['host_name']))
-                    computer_properties['computers'].append(new_dsm) # to fullfill payload format
+                    new_dsm = serializ(api_response.computers(
+                        host_name=dsm['host_name']))
+                    computer_properties['computers'].append(
+                        new_dsm)  # to fullfill payload format
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=2,
+                      separators=(',', ':'), default=json_serial)
 
     return api_response
+
 
 def update_or_create_computer_to_dsm(dsapi, computer_property_file=None, delete=False):
     api = dsapi.api
@@ -1534,8 +1688,10 @@ def update_or_create_computer_to_dsm(dsapi, computer_property_file=None, delete=
 
     all_computers = list_computers_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['host_name'].decode('utf-8') for x in all_computers.to_dict()['computers']])
-    all_name_in_config = set([x['hostName'] for x in computer_properties['computers']])
+    all_name_in_dsm = set([x['host_name'].decode('utf-8')
+                           for x in all_computers.to_dict()['computers']])
+    all_name_in_config = set([x['hostName']
+                              for x in computer_properties['computers']])
 
     for config in computer_properties['computers']:
         get_attr_from_config(config)
@@ -1552,31 +1708,37 @@ def update_or_create_computer_to_dsm(dsapi, computer_property_file=None, delete=
                 computer_id = dsm['id']
                 print('modify_computer for hostName = [%s]' % dsm['host_name'])
                 try:
-                    api_response = api_instance.modify_computer(computer_id=computer_id, computer=computer, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_computer(
+                        computer_id=computer_id, computer=computer, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling ComputersApi.modify_computer: %s\n" % e)
+                    print(
+                        "An exception occurred when calling ComputersApi.modify_computer: %s\n" % e)
 
                 break
         else:
             # create_computer
             print('create_computer for hostName = [%s]' % hostName)
             try:
-                api_response = api_instance.create_computer(computer=computer, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_computer(
+                    computer=computer, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling ComputersApi.create_computer: %s\n" % e)
+                print(
+                    "An exception occurred when calling ComputersApi.create_computer: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_computers.to_dict()['computers']:
             if dsm['host_name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_computer
                 anti_malware_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_computer(computer_id=computer_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_computer(
+                        computer_id=computer_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling ComputersApi.delete_computer: %s\n" % e)
+                    print(
+                        "An exception occurred when calling ComputersApi.delete_computer: %s\n" % e)
 
     return True
 
@@ -1595,14 +1757,17 @@ def update_or_create_policy_to_dsm2(dsapi, computer_property_file=None, delete=F
 
     all_policies = list_policies_from_dsm(dsapi)
 
-    all_name_in_dsm = set([x['name'].decode('utf-8') for x in all_policies.to_dict()['policies']])
-    all_name_in_config = set([x['name'] for x in computer_properties['policies']])
-    policies = deserialize_from_object(computer_properties['policies'], 'Policies')
+    all_name_in_dsm = set([x['name'].decode('utf-8')
+                           for x in all_policies.to_dict()['policies']])
+    all_name_in_config = set([x['name']
+                              for x in computer_properties['policies']])
+    policies = deserialize_from_object(
+        computer_properties['policies'], 'Policies')
     for config in computer_properties['policies']:
         name = config['name']
         print(name)
         policy = deserialize_from_object(config, 'Policy')
-        #pprint(policy)
+        # pprint(policy)
         api_instance = api.PoliciesApi(api.ApiClient(configuration))
         for dsm in all_policies.to_dict()['policies']:
             if dsm['name'] == name:
@@ -1610,10 +1775,12 @@ def update_or_create_policy_to_dsm2(dsapi, computer_property_file=None, delete=F
                 policy_id = dsm['id']
                 print('modify_policy for name = [%s]' % dsm['name'])
                 try:
-                    api_response = api_instance.modify_policy(policy_id=policy_id, policy=policy, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.modify_policy(
+                        policy_id=policy_id, policy=policy, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling PoliciesApi.modify_policy: %s\n" % e)
+                    print(
+                        "An exception occurred when calling PoliciesApi.modify_policy: %s\n" % e)
 
                 break
         else:
@@ -1621,25 +1788,27 @@ def update_or_create_policy_to_dsm2(dsapi, computer_property_file=None, delete=F
             print('create_policy for name = [%s]' % name)
             pprint(policy)
             try:
-                api_response = api_instance.create_policy(policy=policy, api_version=api_version)
-                #pprint(api_response)
+                api_response = api_instance.create_policy(
+                    policy=policy, api_version=api_version)
+                # pprint(api_response)
             except api_exception as e:
-                print("An exception occurred when calling PoliciesApi.create_policy: %s\n" % e)
+                print(
+                    "An exception occurred when calling PoliciesApi.create_policy: %s\n" % e)
 
-    if delete: # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
+    if delete:  # delete those items in dsm but not in property file, i.e. mirro from property file to dsm
         for dsm in all_policies.to_dict()['policies']:
             if dsm['name'] in (all_name_in_dsm - all_name_in_config):
                 # delete_policy
                 policy_id = dsm['id']
                 try:
-                    api_response = api_instance.delete_policy(policy_id=policy_id, api_version=api_version)
-                    #pprint(api_response)
+                    api_response = api_instance.delete_policy(
+                        policy_id=policy_id, api_version=api_version)
+                    # pprint(api_response)
                 except api_exception as e:
-                    print("An exception occurred when calling PoliciesApi.delete_policy: %s\n" % e)
+                    print(
+                        "An exception occurred when calling PoliciesApi.delete_policy: %s\n" % e)
 
     return api_response
-
-
 
 
 def policies_operation(dsapi, computer_property_file=None, delete=False):
@@ -1658,54 +1827,66 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
 
     computer_properties = json_update_key_name(computer_properties, 'ID', 'id')
 
-    for ds_obj in objs_order: # fix order by using list data structure
+    for ds_obj in objs_order:  # fix order by using list data structure
         key = ds_obj
         value = objs_to_obj_klass[key]
         if key in computer_properties.keys():
             print('key = [%s] value = [%s]' % (key, value))
             #objs = deserialize_from_object(computer_properties[key], value)
             for ind, item in enumerate(computer_properties[key]):
-                #print(type(item))
-                #pprint(item)
+                # print(type(item))
+                # pprint(item)
                 obj_id = item['id']
                 obj_identity = item[objs_to_obj_identity[key]]
                 print('id =       [%s] in properties' % obj_id)
                 print('identity = [%s] in properties' % obj_identity)
                 obj = deserialize_from_object(item, value)
-                api_instance_name = '{klass}Api'.format(klass=objs_to_objs_klass[key])
+                api_instance_name = '{klass}Api'.format(
+                    klass=objs_to_objs_klass[key])
                 #api_instance = api.SchedulesApi(api.ApiClient(configuration))
-                api_instance = getattr(api, api_instance_name)(api.ApiClient(configuration))
+                api_instance = getattr(api, api_instance_name)(
+                    api.ApiClient(configuration))
                 for i in range(1, MAX_RETRIES+1):
                     try:
-                        api_name = 'create_{api}'.format(api=objs_to_obj_method[key])
-                        api_response = getattr(api_instance, api_name)(obj, api_version=api_version)
+                        api_name = 'create_{api}'.format(
+                            api=objs_to_obj_method[key])
+                        api_response = getattr(api_instance, api_name)(
+                            obj, api_version=api_version)
                         #api_response = api_instance.create_schedule(schedule=schedule, api_version=api_version)
                     except api_exception as e:
                         if e.status == 429:
                             # Calculate sleep time
                             exp_backoff = (2 ** (i + 3)) / 1000
-                            print('API rate limit is exceeded. Retry in {} s.'.format(exp_backoff))
+                            print('API rate limit is exceeded. Retry in {} s.'.format(
+                                exp_backoff))
                             time.sleep(exp_backoff)
                         elif e.status == 400:
                             # something already exists, trying to modify one instead of create one.
-                            #print(e)
+                            # print(e)
                             if 'already exists.' in e.body:
-                                print('{}\n{}'.format(e.body, 'Trying to modify it'))
+                                print('{}\n{}'.format(
+                                    e.body, 'Trying to modify it'))
                                 try:
-                                    api_name = 'search_{api}'.format(api=objs_to_objs_method[key])
+                                    api_name = 'search_{api}'.format(
+                                        api=objs_to_objs_method[key])
                                     search_criteria = api.SearchCriteria()
                                     search_criteria.field_name = "name"
                                     search_criteria.string_test = "equal"
                                     search_criteria.string_value = obj_identity
-                                    search_filter = api.SearchFilter(None, [search_criteria])
+                                    search_filter = api.SearchFilter(
+                                        None, [search_criteria])
                                     search_filter.max_items = 1
-                                    api_response = getattr(api_instance, api_name)(api_version=api_version, search_filter=search_filter)
-                                    #pprint(api_response.to_dict())
-                                    act_obj_id = getattr(api_response, objs_to_objs_properties[key])[0].id
+                                    api_response = getattr(api_instance, api_name)(
+                                        api_version=api_version, search_filter=search_filter)
+                                    # pprint(api_response.to_dict())
+                                    act_obj_id = getattr(
+                                        api_response, objs_to_objs_properties[key])[0].id
                                     print(act_obj_id)
-                                    api_name = 'modify_{api}'.format(api=objs_to_obj_method[key])
-                                    api_response = getattr(api_instance, api_name)(act_obj_id, obj, api_version=api_version)
-                                    #pprint(api_response.to_dict())
+                                    api_name = 'modify_{api}'.format(
+                                        api=objs_to_obj_method[key])
+                                    api_response = getattr(api_instance, api_name)(
+                                        act_obj_id, obj, api_version=api_version)
+                                    # pprint(api_response.to_dict())
                                 except:
                                     print(e)
 
@@ -1714,28 +1895,32 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
                                 # TODO handle more different situation when status code = 400
                                 return False
                         else:
-                            print('An exception occurred when calling [{api}]'.format(api=api_name))
+                            print('An exception occurred when calling [{api}]'.format(
+                                api=api_name))
                             print(e)
                             # TODO handle more different status code
                             return False
 
                     if api_response:
-                        #pprint(api_response)
-                        #pprint(api_response.to_dict())
+                        # pprint(api_response)
+                        # pprint(api_response.to_dict())
                         new_obj_id = api_response.to_dict()['id']
                         print('new id = [%s]' % new_obj_id)
                         computer_properties[key][ind]['id'] = new_obj_id
 
                         if key in obj_to_id_map.keys():
                             for item in obj_to_id_map[key]:
-                                json_update_value_by_new_key_if_needed(computer_properties, item, obj_id, new_obj_id)
+                                json_update_value_by_new_key_if_needed(
+                                    computer_properties, item, obj_id, new_obj_id)
 
                         break
 
     # update 'id' back to computer_properties
     if computer_property_file and os.path.exists(computer_property_file):
         with open(computer_property_file, "w") as raw_properties:
-            json.dump(computer_properties, raw_properties, indent=4, separators=(',', ':'), default=json_serial)
+            json.dump(computer_properties, raw_properties, indent=4,
+                      separators=(',', ':'), default=json_serial)
+
 
 def policies_dump(dsapi, computer_property_file=None, update=False):
     api = dsapi.api
@@ -1753,47 +1938,58 @@ def policies_dump(dsapi, computer_property_file=None, update=False):
 
     computer_properties = json_update_key_name(computer_properties, 'ID', 'id')
 
-    for ds_obj in objs_order: # fix order by using list data structure
+    for ds_obj in objs_order:  # fix order by using list data structure
         key = ds_obj
         value = objs_to_obj_klass[ds_obj]
 
         api_response = None
-        api_instance_name = '{klass}Api'.format(klass=objs_to_objs_klass[ds_obj])
-        api_instance = getattr(api, api_instance_name)(api.ApiClient(configuration))
+        api_instance_name = '{klass}Api'.format(
+            klass=objs_to_objs_klass[ds_obj])
+        api_instance = getattr(api, api_instance_name)(
+            api.ApiClient(configuration))
         #api_instance = api.ComputersApi(api.ApiClient(configuration))
         for i in range(1, MAX_RETRIES+1):
             try:
                 api_name = 'list_{api}'.format(api=objs_to_objs_method[ds_obj])
-                api_response = getattr(api_instance, api_name)(api_version=api_version)
+                api_response = getattr(api_instance, api_name)(
+                    api_version=api_version)
                 #api_response = api_instance.list_computers(api_version=api_version)
             except api_exception as e:
                 if e.status == 429:
                     # Calculate sleep time
                     exp_backoff = (2 ** (i + 3)) / 1000
-                    print('API rate limit is exceeded. Retry in {} s.'.format(exp_backoff))
+                    print('API rate limit is exceeded. Retry in {} s.'.format(
+                        exp_backoff))
                     time.sleep(exp_backoff)
                 else:
-                    print('An exception occurred when calling [{api}]'.format(api=api_name))
+                    print('An exception occurred when calling [{api}]'.format(
+                        api=api_name))
                     print(e)
                     # TODO handle more different status code
                     return False
 
             # write back to computer_properties
             if computer_property_file and os.path.exists(computer_property_file):
-                if not update: # update those items in dsm but not in property file
+                if not update:  # update those items in dsm but not in property file
                     result = sanitize_for_serialization(api_response)
-                    #pprint(result)
-                    computer_properties[ds_obj] = result[ds_obj] # to fullfill payload format
-                else: # [keep property file] and update those items in dsm but not in property file
-                    all_name_in_dsm = set([x[objs_to_obj_identity[ds_obj]].decode('utf-8') for x in api_response.to_dict()[ds_obj]])
-                    all_name_in_config = set([x[objs_to_obj_identity[ds_obj]] for x in computer_properties[ds_obj]])
+                    # pprint(result)
+                    # to fullfill payload format
+                    computer_properties[ds_obj] = result[ds_obj]
+                else:  # [keep property file] and update those items in dsm but not in property file
+                    all_name_in_dsm = set([x[objs_to_obj_identity[ds_obj]].decode(
+                        'utf-8') for x in api_response.to_dict()[ds_obj]])
+                    all_name_in_config = set(
+                        [x[objs_to_obj_identity[ds_obj]] for x in computer_properties[ds_obj]])
                     update_set = (all_name_in_dsm - all_name_in_config)
                     for dsm in api_response.to_dict()[ds_obj]:
                         if dsm[objs_to_obj_identity[ds_obj]] in update_set:
                             #new_dsm = {name_map[name]: val for name, val in dsm.items()}
-                            new_dsm = serializ(api_response.computers(host_name=dsm[objs_to_obj_identity[ds_obj]]))
-                            computer_properties[ds_obj].append(new_dsm) # to fullfill payload format
+                            new_dsm = serializ(api_response.computers(
+                                host_name=dsm[objs_to_obj_identity[ds_obj]]))
+                            computer_properties[ds_obj].append(
+                                new_dsm)  # to fullfill payload format
                 with open(computer_property_file, "w") as raw_properties:
-                    json.dump(computer_properties, raw_properties, indent=2, separators=(',', ':'), default=json_serial)
+                    json.dump(computer_properties, raw_properties, indent=2,
+                              separators=(',', ':'), default=json_serial)
 
             break
