@@ -1,3 +1,5 @@
+from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
+import urllib3
 import sys
 import inspect
 import os
@@ -17,12 +19,9 @@ from deepsecurity.rest import ApiException as api_exception
 dsm_property = 'dsm_properties.json'
 computer_property = 'computer_properties.json'
 
-import urllib3
-from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 
 urllib3.disable_warnings(InsecureRequestWarning)
 urllib3.disable_warnings(InsecurePlatformWarning)
-
 
 
 class DSApiClient(api.ApiClient):
@@ -34,25 +33,33 @@ class DSApiClient(api.ApiClient):
 
         super(DSApiClient, self).__init__(configuration=self.configuration)
 
-        dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
+        dsm_property_file = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), dsm_property)
         #dsm_property_file = dsm_property
         if not os.path.exists(dsm_property_file):
-            raise Exception('exception due to dsm propery file = %s not found' % dsm_property_file)
+            raise Exception(
+                'exception due to dsm propery file = %s not found' % dsm_property_file)
 
-        computer_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), computer_property)
+        computer_property_file = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), computer_property)
         #computer_property_file = computer_property
         if not os.path.exists(computer_property_file):
-            raise Exception('exception due to configuration propery file = %s not found' % computer_property_file)
+            raise Exception(
+                'exception due to configuration propery file = %s not found' % computer_property_file)
 
         self.dsm_properties = self.load_property(dsm_property_file)
         self.computer_properties = self.load_property(computer_property_file)
 
-        self.computer = self.load_property_key(self.computer_properties, 'computer')
-        self.computer_id = self.load_property_key(self.computer_properties, 'computer_id')
-        self.policy_id = self.load_property_key(self.computer_properties, 'policy_id')
-        self.default_api_version = self.load_property_key(self.dsm_properties, 'default_api_version')
+        self.computer = self.load_property_key(
+            self.computer_properties, 'computer')
+        self.computer_id = self.load_property_key(
+            self.computer_properties, 'computer_id')
+        self.policy_id = self.load_property_key(
+            self.computer_properties, 'policy_id')
+        self.default_api_version = self.load_property_key(
+            self.dsm_properties, 'default_api_version')
 
-        ### Auto load APIs as self.XXXApi
+        # Auto load APIs as self.XXXApi
         '''
         for name, obj in inspect.getmembers(sys.modules["deepsecurity"]):
             if inspect.isclass(obj) and name.endswith("Api"):
@@ -75,7 +82,8 @@ class DSApiClient(api.ApiClient):
         configuration = Configuration()
 
         # Get the DSM URL and API key from a JSON file
-        dsm_property_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), dsm_property)
+        dsm_property_file = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), dsm_property)
 
         with open(dsm_property_file) as raw_properties:
             dsm_properties = json.load(raw_properties)
@@ -91,7 +99,8 @@ class DSApiClient(api.ApiClient):
         self.secret_key = dsm_properties.get('secretkey', None)
 
         if not configuration.host:
-            configuration.host = "https://{host}:{port}/api".format(host=self.host, port=self.port)
+            configuration.host = "https://{host}:{port}/api".format(
+                host=self.host, port=self.port)
 
         session = None
         if not self.secret_key:
@@ -100,29 +109,30 @@ class DSApiClient(api.ApiClient):
             self.rid = self.session['rid']
             self.secret_key = self.create_api_key(configuration)
             if self.tenantAccount and self.tenantID:
-                self.secret_key = self.create_api_key(configuration, tenant=True)
+                self.secret_key = self.create_api_key(
+                    configuration, tenant=True)
 
         configuration.api_key['api-secret-key'] = self.secret_key
 
-        #pprint(vars(configuration))
+        # pprint(vars(configuration))
         return configuration
-
 
     def create_session(self, configuration):
         header = {"API-Version": "v1", "Content-Type": "application/json"}
-        payload = {"userName": configuration.username, "password": configuration.password}
+        payload = {"userName": configuration.username,
+                   "password": configuration.password}
 
         #print("payload: %s" % payload)
         result = requests.post(configuration.host + "/sessions",
-                                headers=header,
-                                data=json.dumps(payload),
-                                verify=False)
+                               headers=header,
+                               data=json.dumps(payload),
+                               verify=False)
         #print("status_code: %s" % result.status_code)
         #print("content: %s" % result.text)
         rid, sid = result.json()["RID"], result.cookies.get_dict()['sID']
         #print("rid: {}, sid: {}".format(rid, sid))
 
-        return {'rid':rid, 'sid':sid}
+        return {'rid': rid, 'sid': sid}
 
     def end_session(self):
         if self.sid is not None and self.rid is not None:
@@ -130,7 +140,8 @@ class DSApiClient(api.ApiClient):
                       "Content-Type": "application/json",
                       "RID": self.rid,
                       "Cookie": "sid={sid}".format(sid=self.sid)}
-            result = requests.delete(self.url + "/sessions/current", headers=header, verify=False)
+            result = requests.delete(
+                self.url + "/sessions/current", headers=header, verify=False)
             #print("status_code: %s" % result.status_code, flush=True)
             print("status_code: {}".format(result.status_code))
             return result
@@ -144,9 +155,11 @@ class DSApiClient(api.ApiClient):
             print('Connecting to %s' % DSM_URL)
             self.dsm = suds.client.Client(DSM_URL + '/webservice/Manager?WSDL')
             if self.tenantAccount:
-                self.sID = dsm.service.authenticateTenant(self.tenantAccount, configuration.username, configuration.password)
+                self.sID = dsm.service.authenticateTenant(
+                    self.tenantAccount, configuration.username, configuration.password)
             else:
-                self.sID = dsm.service.authenticate(configuration.username, configuration.password)
+                self.sID = dsm.service.authenticate(
+                    configuration.username, configuration.password)
             print('%s: %s' % ('Login DSM'.ljust(20), '[ OK ]'))
         except:
             print('%s: %s' % ('Login DSM'.ljust(20), '[ ERROR ]'))
@@ -173,9 +186,9 @@ class DSApiClient(api.ApiClient):
         current_time_in_ms = int(round(time.time() * 1000))
 
         header = {"API-Version": "v1",
-                    "Content-Type": "application/json",
-                    "RID": self.session['rid'],
-                    "Cookie": "sid={}".format(self.session['sid'])}
+                  "Content-Type": "application/json",
+                  "RID": self.session['rid'],
+                  "Cookie": "sid={}".format(self.session['sid'])}
 
         payload = {
             "keyName": "auto_generated_by_PIT_on_%s" % timestr,
@@ -184,19 +197,20 @@ class DSApiClient(api.ApiClient):
             "roleID": 1,
             "timeZone": "Asia/Taipei",
             "active": True,
-            "expiryDate": current_time_in_ms + time_to_expiry_in_ms # expires in 1 day
+            "expiryDate": current_time_in_ms + time_to_expiry_in_ms  # expires in 1 day
         }
 
         #print("header: %s, payload: %s" % (header, payload))
         if tenant and self.tenantID:
-            path = "{host}/tenants/{tenantID}/apikeys".format(host=configuration.host, tenantID=self.tenantID)
+            path = "{host}/tenants/{tenantID}/apikeys".format(
+                host=configuration.host, tenantID=self.tenantID)
         else:
             path = "{host}/apikeys".format(host=configuration.host)
-        #print(path)
+        # print(path)
         result = requests.post(path,
-                                headers=header,
-                                data=json.dumps(payload),
-                                verify=False)
+                               headers=header,
+                               data=json.dumps(payload),
+                               verify=False)
         #print("status_code: %s" % result.status_code)
         #print("content: %s" % result.text)
         api_key = result.json()["secretKey"]
