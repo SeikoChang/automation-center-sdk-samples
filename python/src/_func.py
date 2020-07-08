@@ -1970,7 +1970,7 @@ def policies_dump(dsapi, computer_property_file=None, update=False):
 
             # write back to computer_properties
             if computer_property_file and os.path.exists(computer_property_file):
-                if not update:  # update those items in dsm but not in property file
+                if not update:  # sync dsm current status to computer property file
                     result = sanitize_for_serialization(api_response)
                     # pprint(result)
                     # to fullfill payload format
