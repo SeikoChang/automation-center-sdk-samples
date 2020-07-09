@@ -1884,8 +1884,9 @@ def policies_operation(dsapi, computer_property_file=None, delete=False):
                                     print(act_obj_id)
                                     api_name = 'modify_{api}'.format(
                                         api=objs_to_obj_method[key])
+                                    kwarg = act_obj_id if ds_obj in ['portLists'] else [act_obj_id, obj]
                                     api_response = getattr(api_instance, api_name)(
-                                        act_obj_id, obj, api_version=api_version)
+                                        *kwarg, api_version=api_version)
                                     # pprint(api_response.to_dict())
                                 except:
                                     print(e)
